@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Clinic Loyalty Fund</title>
-  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.ethers.io/lib/ethers-5.7.umd.min.js"></script>
   <style>
     body { font-family: Arial; padding: 20px; }
     button { padding: 10px 20px; margin: 10px 0; }
@@ -28,8 +28,10 @@
   <p id="error"></p>
 
   <script>
-    const contractAddress = "0x1797f2eaa9a7211f86538acf76cf3adf3281e837";     const tokenAddress = "0x492456d2e69775b332d72a069d27a6497231e1ab";  
+    const contractAddress = "0x1797f2eaa9a7211f86538acf76cf3adf3281e837";  // ВСТАВЬ СВОЙ АДРЕС LoyaltyFund
+    const tokenAddress = "0x492456d2e69775b332d72a069d27a6497231e1ab";  // ВСТАВЬ АДРЕС ClinicRewardToken
 
+    // ABI для LoyaltyFund (только нужные функции)
     const fundABI = [
 	{
 		"inputs": [],
@@ -704,11 +706,8 @@
         document.getElementById('status').innerText = "Success! Tokens minted.";
         updateBalances();
       } catch (err) {
-  console.error("Full error:", err);  // открой F12 → Console
-  let reason = err.reason || err.message || "Unknown revert";
-  if (err.data) reason += " | Data: " + err.data;
-  document.getElementById('error').innerText = "Error: " + reason;
-}
+        document.getElementById('error').innerText = "Error: " + (err.reason || err.message);
+      }
     };
 
     // Автообновление баланса при смене аккаунта/сети
