@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Clinic Loyalty Fund</title>
-  <script src="https://cdn.ethers.io/lib/ethers-5.7.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js" crossorigin="anonymous"></script>
   <style>
     body { font-family: Arial; padding: 20px; }
     button { padding: 10px 20px; margin: 10px 0; }
@@ -26,12 +26,12 @@
 
   <p id="status"></p>
   <p id="error"></p>
+  <button id="refreshBtn">Refresh Balances</button>	
 
   <script>
-    const contractAddress = "0x1797f2eaa9a7211f86538acf76cf3adf3281e837";  // ВСТАВЬ СВОЙ АДРЕС LoyaltyFund
-    const tokenAddress = "0x492456d2e69775b332d72a069d27a6497231e1ab";  // ВСТАВЬ АДРЕС ClinicRewardToken
+    const contractAddress = "0xF68AC1448ba859208b0622A87CF3f3A4d591Cfa3";
+	const tokenAddress = "0x85e8942a9b84627A7479C279e6BB46ccCa569dc4";  
 
-    // ABI для LoyaltyFund (только нужные функции)
     const fundABI = [
 	{
 		"inputs": [],
@@ -214,442 +214,9 @@
 
     // ABI для ERC20 токена
     const tokenABI = [
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "spender",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "value",
-				"type": "uint256"
-			}
-		],
-		"name": "approve",
-		"outputs": [
-			{
-				"internalType": "bool",
-				"name": "",
-				"type": "bool"
-			}
-		],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "value",
-				"type": "uint256"
-			}
-		],
-		"name": "burn",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "account",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "value",
-				"type": "uint256"
-			}
-		],
-		"name": "burnFrom",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"stateMutability": "nonpayable",
-		"type": "constructor"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "spender",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "allowance",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "needed",
-				"type": "uint256"
-			}
-		],
-		"name": "ERC20InsufficientAllowance",
-		"type": "error"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "sender",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "balance",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "needed",
-				"type": "uint256"
-			}
-		],
-		"name": "ERC20InsufficientBalance",
-		"type": "error"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "approver",
-				"type": "address"
-			}
-		],
-		"name": "ERC20InvalidApprover",
-		"type": "error"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "receiver",
-				"type": "address"
-			}
-		],
-		"name": "ERC20InvalidReceiver",
-		"type": "error"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "sender",
-				"type": "address"
-			}
-		],
-		"name": "ERC20InvalidSender",
-		"type": "error"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "spender",
-				"type": "address"
-			}
-		],
-		"name": "ERC20InvalidSpender",
-		"type": "error"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "owner",
-				"type": "address"
-			}
-		],
-		"name": "OwnableInvalidOwner",
-		"type": "error"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "account",
-				"type": "address"
-			}
-		],
-		"name": "OwnableUnauthorizedAccount",
-		"type": "error"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "owner",
-				"type": "address"
-			},
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "spender",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "value",
-				"type": "uint256"
-			}
-		],
-		"name": "Approval",
-		"type": "event"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "to",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "amount",
-				"type": "uint256"
-			}
-		],
-		"name": "mint",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "previousOwner",
-				"type": "address"
-			},
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "newOwner",
-				"type": "address"
-			}
-		],
-		"name": "OwnershipTransferred",
-		"type": "event"
-	},
-	{
-		"inputs": [],
-		"name": "renounceOwnership",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "to",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "value",
-				"type": "uint256"
-			}
-		],
-		"name": "transfer",
-		"outputs": [
-			{
-				"internalType": "bool",
-				"name": "",
-				"type": "bool"
-			}
-		],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "from",
-				"type": "address"
-			},
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "to",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "value",
-				"type": "uint256"
-			}
-		],
-		"name": "Transfer",
-		"type": "event"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "from",
-				"type": "address"
-			},
-			{
-				"internalType": "address",
-				"name": "to",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "value",
-				"type": "uint256"
-			}
-		],
-		"name": "transferFrom",
-		"outputs": [
-			{
-				"internalType": "bool",
-				"name": "",
-				"type": "bool"
-			}
-		],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "newOwner",
-				"type": "address"
-			}
-		],
-		"name": "transferOwnership",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "owner",
-				"type": "address"
-			},
-			{
-				"internalType": "address",
-				"name": "spender",
-				"type": "address"
-			}
-		],
-		"name": "allowance",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "account",
-				"type": "address"
-			}
-		],
-		"name": "balanceOf",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "decimals",
-		"outputs": [
-			{
-				"internalType": "uint8",
-				"name": "",
-				"type": "uint8"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "name",
-		"outputs": [
-			{
-				"internalType": "string",
-				"name": "",
-				"type": "string"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "owner",
-		"outputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "symbol",
-		"outputs": [
-			{
-				"internalType": "string",
-				"name": "",
-				"type": "string"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "totalSupply",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	}
+  "function balanceOf(address owner) view returns (uint256)",
+  "function decimals() view returns (uint8)",
+  "function totalSupply() view returns (uint256)"
 ];
 
     let provider, signer, fundContract, tokenContract;
@@ -669,8 +236,13 @@
         document.getElementById('network').innerText = network.chainId === 11155111 ? "Sepolia ✅" : "Wrong network! Switch to Sepolia";
 
         // Подключи контракты
-        fundContract = new ethers.Contract(contractAddress, fundABI, signer);
-        tokenContract = new ethers.Contract(tokenAddress, tokenABI, signer);
+fundContract = new ethers.Contract(contractAddress, fundABI, signer);
+
+const realTokenAddress = await fundContract.rewardToken();
+console.log("TOKEN FROM FUND:", realTokenAddress);
+
+tokenContract = new ethers.Contract(realTokenAddress, tokenABI, signer);
+
 
         updateBalances();
       } catch (err) {
@@ -679,37 +251,72 @@
     };
 
     // Обновить балансы
-    async function updateBalances() {
-      if (!signer) return;
-      const addr = await signer.getAddress();
-      const ethBal = await provider.getBalance(addr);
-      document.getElementById('ethBalance').innerText = ethers.utils.formatEther(ethBal);
+   async function updateBalances() {
+  if (!signer) {
+    console.log("Signer not ready yet");
+    return;
+  }
 
-      const tokenBal = await tokenContract.balanceOf(addr);
-      const decimals = await tokenContract.decimals();
-      document.getElementById('tokenBalance').innerText = ethers.utils.formatUnits(tokenBal, decimals);
-    }
+  try {
+    const addr = await signer.getAddress();
+    console.log("User address:", addr);
 
-    // Contribute
-    document.getElementById('contributeBtn').onclick = async () => {
-      const amountStr = document.getElementById('amount').value;
-      if (!amountStr || parseFloat(amountStr) <= 0) return alert("Enter amount >0");
+    // Баланс ETH
+    const ethBal = await provider.getBalance(addr);
+    console.log("Raw ETH balance (wei):", ethBal.toString());
+    document.getElementById('ethBalance').innerText = ethers.utils.formatEther(ethBal) + " ETH";
 
-      try {
-        const amountWei = ethers.utils.parseEther(amountStr);
-        document.getElementById('status').innerText = "Sending...";
+    // Баланс CRT токенов
+	console.log("Calling balanceOf on token address:", tokenAddress);
+	console.log("User address for balanceOf:", addr);
+    const tokenBalRaw = await tokenContract.balanceOf(addr);
+    console.log("Raw CRT balance (wei):", tokenBalRaw.toString());  // ← самый важный лог
 
-        const tx = await fundContract.contribute({ value: amountWei });
-        document.getElementById('status').innerText = "Tx sent: " + tx.hash;
+    const decimals = await tokenContract.decimals();
+    console.log("Token decimals:", decimals);
 
-        await tx.wait();
-        document.getElementById('status').innerText = "Success! Tokens minted.";
-        updateBalances();
-      } catch (err) {
-        document.getElementById('error').innerText = "Error: " + (err.reason || err.message);
-      }
-    };
+    const formatted = ethers.utils.formatUnits(tokenBalRaw, decimals);
+    console.log("Formatted CRT balance:", formatted);
 
+    document.getElementById('tokenBalance').innerText = formatted + " CRT";
+  } catch (err) {
+    console.error("Error in updateBalances:", err.message || err);
+    document.getElementById('tokenBalance').innerText = "Error reading balance";
+  }
+}
+
+// Contribute
+document.getElementById('contributeBtn').onclick = async () => {
+  const amountStr = document.getElementById('amount').value;
+  if (!amountStr || parseFloat(amountStr) <= 0) return alert("Enter amount >0");
+
+  try {
+    const amountWei = ethers.utils.parseEther(amountStr);
+    document.getElementById('status').innerText = "Sending...";
+    document.getElementById('error').innerText = "";
+
+    const tx = await fundContract.contribute({ value: amountWei });
+    document.getElementById('status').innerText = `Tx sent: ${tx.hash}. Waiting...`;
+
+    await tx.wait();  // ждём подтверждения
+
+    document.getElementById('status').innerText = "Success! Tokens minted. Updating balance...";
+    
+    await updateBalances();  // ← вот это главное! обновляем после mined
+  } catch (err) {
+    console.error("Full error:", err);
+    let reason = err.reason || err.message || "Unknown revert";
+    if (err.data) reason += " | Data: " + err.data.message;
+    document.getElementById('error').innerText = "Error: " + reason;
+    document.getElementById('status').innerText = "";
+  }
+};
+
+// Привязка кнопки Refresh Balances
+document.getElementById('refreshBtn').onclick = async () => {
+  console.log("Refresh button clicked — updating balances...");
+  await updateBalances();
+};
     // Автообновление баланса при смене аккаунта/сети
     if (window.ethereum) {
       window.ethereum.on('accountsChanged', () => location.reload());
