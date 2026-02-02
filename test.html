@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Clinic Loyalty Fund</title>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js" crossorigin="anonymous"></script>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    button { padding: 10px 20px; margin: 10px 0; }
+    #status { color: green; }
+    #error { color: red; }
+  </style>
+</head>
+<body>
+  <h1>Clinic Loyalty Fund (Sepolia Testnet)</h1>
+
+  <button id="connect">Connect MetaMask</button>
+  <p>Address: <span id="address">Not connected</span></p>
+  <p>Network: <span id="network">Unknown</span></p>
+  <p>Your test ETH balance: <span id="ethBalance">0</span></p>
+  <p>Your CRT tokens: <span id="tokenBalance">0</span></p>
+
+  <h2>Contribute (send test ETH → get tokens instantly)</h2>
+  <input type="number" id="amount" placeholder="Amount in ETH (e.g. 0.01)" step="0.0001" min="0.0001">
+  <button id="contributeBtn">Contribute</button>
+
+  <p id="status"></p>
+  <p id="error"></p>
+  <button id="refreshBtn">Refresh Balances</button>	
+
+  <script>
+    const contractAddress = "0xF68AC1448ba859208b0622A87CF3f3A4d591Cfa3";
+	const tokenAddress = "0x85e8942a9b84627A7479C279e6BB46ccCa569dc4";  
+
+    const fundABI = [
+	{
+		"inputs": [],
+		"name": "contribute",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_rewardTokenAddress",
+				"type": "address"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "contributor",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "amountETH",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "tokensMinted",
+				"type": "uint256"
+			}
+		],
+		"name": "Contributed",
+		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "tokenAmount",
+				"type": "uint256"
+			},
+			{
+				"internalType": "string",
+				"name": "serviceNote",
+				"type": "string"
+			}
+		],
+		"name": "redeemForService",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "user",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			}
+		],
+		"name": "TokensBurned",
+		"type": "event"
+	},
+	{
+		"inputs": [],
+		"name": "CAMPAIGN_TITLE",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "contributions",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "FUNDING_GOAL",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getMyContribution",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getTotalRaised",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "rewardToken",
+		"outputs": [
+			{
+				"internalType": "contract ClinicRewardToken",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "totalRaised",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	}
+];
+
+    // ABI для ERC20 токена
+    const tokenABI = [
+  "function balanceOf(address owner) view returns (uint256)",
+  "function decimals() view returns (uint8)",
+  "function totalSupply() view returns (uint256)"
+];
+
+    let provider, signer, fundContract, tokenContract;
+
+    // Connect MetaMask
+    document.getElementById('connect').onclick = async () => {
+      if (!window.ethereum) return alert("Install MetaMask!");
+
+      try {
+        await window.ethereum.request({ method: 'eth_requestAccounts' });
+        provider = new ethers.providers.Web3Provider(window.ethereum);
+        signer = provider.getSigner();
+        const addr = await signer.getAddress();
+        document.getElementById('address').innerText = addr;
+
+        const network = await provider.getNetwork();
+        document.getElementById('network').innerText = network.chainId === 11155111 ? "Sepolia ✅" : "Wrong network! Switch to Sepolia";
+
+        // Подключи контракты
+fundContract = new ethers.Contract(contractAddress, fundABI, signer);
+
+const realTokenAddress = await fundContract.rewardToken();
+console.log("TOKEN FROM FUND:", realTokenAddress);
+
+tokenContract = new ethers.Contract(realTokenAddress, tokenABI, signer);
+
+
+        updateBalances();
+      } catch (err) {
+        document.getElementById('error').innerText = "Connect failed: " + err.message;
+      }
+    };
+
+    // Обновить балансы
+   async function updateBalances() {
+  if (!signer) {
+    console.log("Signer not ready yet");
+    return;
+  }
+
+  try {
+    const addr = await signer.getAddress();
+    console.log("User address:", addr);
+
+    // Баланс ETH
+    const ethBal = await provider.getBalance(addr);
+    console.log("Raw ETH balance (wei):", ethBal.toString());
+    document.getElementById('ethBalance').innerText = ethers.utils.formatEther(ethBal) + " ETH";
+
+    // Баланс CRT токенов
+	console.log("Calling balanceOf on token address:", tokenAddress);
+	console.log("User address for balanceOf:", addr);
+    const tokenBalRaw = await tokenContract.balanceOf(addr);
+    console.log("Raw CRT balance (wei):", tokenBalRaw.toString());  // ← самый важный лог
+
+    const decimals = await tokenContract.decimals();
+    console.log("Token decimals:", decimals);
+
+    const formatted = ethers.utils.formatUnits(tokenBalRaw, decimals);
+    console.log("Formatted CRT balance:", formatted);
+
+    document.getElementById('tokenBalance').innerText = formatted + " CRT";
+  } catch (err) {
+    console.error("Error in updateBalances:", err.message || err);
+    document.getElementById('tokenBalance').innerText = "Error reading balance";
+  }
+}
+
+// Contribute
+document.getElementById('contributeBtn').onclick = async () => {
+  const amountStr = document.getElementById('amount').value;
+  if (!amountStr || parseFloat(amountStr) <= 0) return alert("Enter amount >0");
+
+  try {
+    const amountWei = ethers.utils.parseEther(amountStr);
+    document.getElementById('status').innerText = "Sending...";
+    document.getElementById('error').innerText = "";
+
+    const tx = await fundContract.contribute({ value: amountWei });
+    document.getElementById('status').innerText = `Tx sent: ${tx.hash}. Waiting...`;
+
+    await tx.wait();  // ждём подтверждения
+
+    document.getElementById('status').innerText = "Success! Tokens minted. Updating balance...";
+    
+    await updateBalances();  // ← вот это главное! обновляем после mined
+  } catch (err) {
+    console.error("Full error:", err);
+    let reason = err.reason || err.message || "Unknown revert";
+    if (err.data) reason += " | Data: " + err.data.message;
+    document.getElementById('error').innerText = "Error: " + reason;
+    document.getElementById('status').innerText = "";
+  }
+};
+
+// Привязка кнопки Refresh Balances
+document.getElementById('refreshBtn').onclick = async () => {
+  console.log("Refresh button clicked — updating balances...");
+  await updateBalances();
+};
+    // Автообновление баланса при смене аккаунта/сети
+    if (window.ethereum) {
+      window.ethereum.on('accountsChanged', () => location.reload());
+      window.ethereum.on('chainChanged', () => location.reload());
+    }
+  </script>
+</body>
+</html>

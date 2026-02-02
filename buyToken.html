@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Купить CRT — Private Clinic</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+  <style>
+    :root {
+      --bg: #f0f9fc;
+      --card: #ffffff;
+      --text: #1a3c34;
+      --muted: #5f7a75;
+      --accent: #26c6da;
+      --accent-dark: #0097a7;
+      --border: #b2ebf2;
+      --shadow: 0 8px 30px rgba(38, 198, 218, 0.15);
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    header {
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 0;
+    }
+    .logo {
+      font-size: 1.7rem;
+      font-weight: 700;
+      color: var(--accent-dark);
+    }
+    .logo span { color: var(--accent); }
+    .crt-badge {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 16px;
+      background: #e0f7fa;
+      border-radius: 50px;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+    .crt-badge:hover {
+      background: var(--accent);
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+    .crt-icon {
+      width: 28px;
+      height: 28px;
+      background: var(--accent);
+      color: white;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-weight: bold;
+      font-size: 14px;
+    }
+    main {
+      padding: 60px 20px;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      font-size: 2.5rem;
+    }
+    .info-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 32px;
+      box-shadow: var(--shadow);
+      text-align: center;
+    }
+    .form-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: var(--shadow);
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: var(--text);
+    }
+    input {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 1.1rem;
+      margin-bottom: 20px;
+    }
+    button {
+      width: 100%;
+      padding: 16px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 50px;
+      font-size: 1.2rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    button:disabled {
+      background: #b2ebf2;
+      cursor: not-allowed;
+    }
+    button:hover:not(:disabled) {
+      background: var(--accent-dark);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+    #status, #error {
+      margin-top: 16px;
+      text-align: center;
+      font-weight: 500;
+    }
+    #status { color: var(--accent); }
+    #error { color: #e53935; }
+    footer {
+      text-align: center;
+      padding: 2rem;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+      margin-top: 60px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <nav>
+        <div class="logo">Private<span>Clinic</span></div>
+        <div id="crtBadge" class="crt-badge">
+          <div class="crt-icon">C</div>
+          <span id="crtAmount">0.00 CRT</span>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <h1>Купить CRT токены</h1>
+
+    <div class="info-box">
+      <p>Внесите тестовый ETH в фонд лояльности клиники и мгновенно получите CRT токены. Используйте их для услуг, приоритетной записи и специальных программ.</p>
+    </div>
+
+    <div class="form-box">
+      <button id="connect">Подключить MetaMask</button>
+
+      <p>Адрес: <span id="address">Не подключено</span></p>
+      <p>Сеть: <span id="network">Неизвестно</span></p>
+      <p>Ваш тестовый ETH: <span id="ethBalance">0</span></p>
+      <p>Ваши CRT токены: <span id="tokenBalance">0</span></p>
+
+      <div style="margin: 24px 0;">
+        <label for="amount">Сумма в ETH (например 0.01):</label>
+        <input type="number" id="amount" placeholder="Сумма в ETH (например 0.01)" step="0.0001" min="0.0001">
+      </div>
+
+      <button id="contributeBtn" >Внести вклад</button>
+
+      <p id="status"></p>
+      <p id="error"></p>
+
+      <button id="refreshBtn" >Обновить балансы</button>
+    </div>
+  </main>
+
+  <footer>
+    © 2026 Private Clinic. Все права защищены.
+  </footer>
+
+  <!-- Твой существующий app.js подключается здесь -->
+  <script src="./app.js"></script>
+
+  <!-- Загрузка баланса CRT в бейдж -->
+ <script>
+const FUND_ADDRESS = "0xF68AC1448ba859208b0622A87CF3f3A4d591Cfa3";
+
+const fundABI = [
+  "function rewardToken() view returns(address)"
+];
+
+const tokenABI = [
+  "function balanceOf(address) view returns(uint256)",
+  "function decimals() view returns(uint8)"
+];
+
+const crtAmountEl = document.getElementById("crtAmount");
+const badge = document.getElementById("crtBadge");
+
+badge.addEventListener("click", () => {
+  window.location.href = "index.html";
+});
+
+async function loadCRTBadge() {
+
+  const addr = localStorage.getItem("userAddress");
+  if (!addr) return;
+
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
+
+  const fund = new ethers.Contract(
+    FUND_ADDRESS,
+    fundABI,
+    provider
+  );
+
+  const tokenAddress = await fund.rewardToken();
+
+  const token = new ethers.Contract(
+    tokenAddress,
+    tokenABI,
+    provider
+  );
+
+  const raw = await token.balanceOf(addr);
+  const decimals = await token.decimals();
+
+  const formatted = ethers.utils.formatUnits(raw, decimals);
+
+  document.getElementById("crtAmount").innerText =
+    formatted + " CRT";
+}
+
+</script>
+
+
+</body>
+</html>
