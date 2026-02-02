@@ -111,17 +111,55 @@ let tokenContract;
 
 window.addEventListener("load", () => {
 
-  document.getElementById("connect").onclick = connect;
-  document.getElementById("contributeBtn").onclick = contribute;
-  document.getElementById("refreshBtn").onclick = updateBalances;
+  const c = document.getElementById("connect");
+  if (c) c.onclick = connect;
+
+  const b = document.getElementById("contributeBtn");
+  if (b) b.onclick = contribute;
+
+  const r = document.getElementById("refreshBtn");
+  if (r) r.onclick = updateBalances;
+
+  const badge = document.getElementById("crtBadge");
+  if (badge) {
+    badge.onclick = () => {
+      window.location.href = "index.html";
+    };
+  }
 
   if (window.ethereum) {
     window.ethereum.on("accountsChanged", () => location.reload());
     window.ethereum.on("chainChanged", () => location.reload());
   }
+
+  tryAutoConnect();
 });
 
+
+
 // ----------------------------
+async function tryAutoConnect() {
+
+  if (!window.ethereum) return;
+
+  const accounts = await window.ethereum.request({
+    method: "eth_accounts"
+  });
+
+  if (!accounts || accounts.length === 0) {
+    return; // пользователь не подключал сайт
+  }
+
+  provider = new ethers.providers.Web3Provider(window.ethereum);
+  signer = provider.getSigner();
+
+  fundContract = new ethers.Contract(contractAddress, fundABI, signer);
+
+  const tokenAddress = await fundContract.rewardToken();
+  tokenContract = new ethers.Contract(tokenAddress, tokenABI, signer);
+
+  await updateCRTBadge();
+}
 
 async function connect() {
 
@@ -152,6 +190,7 @@ async function connect() {
     tokenContract = new ethers.Contract(tokenAddress, tokenABI, signer);
 
     await updateBalances();
+    await updateCRTBadge();
 
   } catch (err) {
     console.error(err);
@@ -181,6 +220,9 @@ async function updateBalances() {
 
     document.getElementById("tokenBalance").innerText =
       formatted + " CRT";
+    
+    await updateCRTBadge();
+
 
   } catch (err) {
     console.error(err);
@@ -218,6 +260,8 @@ async function contribute() {
       "Success!";
 
     await updateBalances();
+    await updateCRTBadge();
+
 
   } catch (err) {
     console.error(err);
@@ -227,4 +271,32 @@ async function contribute() {
       "Error: " + (err.reason || err.message || err);
   }
   
+  
+// badge update
 }
+async function updateCRTBadge() {
+
+  const el = document.getElementById("crtAmount");
+  if (!el) return; // если страницы без бейджа
+
+  if (!signer || !tokenContract) {
+    el.innerText = "— CRT";
+    return;
+  }
+
+  try {
+
+    const addr = await signer.getAddress();
+
+    const raw = await tokenContract.balanceOf(addr);
+    const decimals = await tokenContract.decimals();
+
+    const formatted = ethers.utils.formatUnits(raw, decimals);
+
+    el.innerText = formatted + " CRT";
+
+  } catch (e) {
+    console.error("badge error", e);
+  }
+}
+

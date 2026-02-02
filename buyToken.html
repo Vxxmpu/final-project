@@ -201,61 +201,7 @@
     © 2026 Private Clinic. Все права защищены.
   </footer>
 
-  <!-- Твой существующий app.js подключается здесь -->
   <script src="./app.js"></script>
-
-  <!-- Загрузка баланса CRT в бейдж -->
- <script>
-const FUND_ADDRESS = "0xF68AC1448ba859208b0622A87CF3f3A4d591Cfa3";
-
-const fundABI = [
-  "function rewardToken() view returns(address)"
-];
-
-const tokenABI = [
-  "function balanceOf(address) view returns(uint256)",
-  "function decimals() view returns(uint8)"
-];
-
-const crtAmountEl = document.getElementById("crtAmount");
-const badge = document.getElementById("crtBadge");
-
-badge.addEventListener("click", () => {
-  window.location.href = "index.html";
-});
-
-async function loadCRTBadge() {
-
-  const addr = localStorage.getItem("userAddress");
-  if (!addr) return;
-
-  const provider = new ethers.providers.Web3Provider(window.ethereum);
-
-  const fund = new ethers.Contract(
-    FUND_ADDRESS,
-    fundABI,
-    provider
-  );
-
-  const tokenAddress = await fund.rewardToken();
-
-  const token = new ethers.Contract(
-    tokenAddress,
-    tokenABI,
-    provider
-  );
-
-  const raw = await token.balanceOf(addr);
-  const decimals = await token.decimals();
-
-  const formatted = ethers.utils.formatUnits(raw, decimals);
-
-  document.getElementById("crtAmount").innerText =
-    formatted + " CRT";
-}
-
-</script>
-
 
 </body>
 </html>
