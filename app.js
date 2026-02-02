@@ -226,4 +226,5 @@ async function contribute() {
     document.getElementById("error").innerText =
       "Error: " + (err.reason || err.message || err);
   }
+  
 }

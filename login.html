@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Вход — Private Clinic</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+
+  <style>
+    body {
+      font-family: Roboto, sans-serif;
+      background: #f0f9fc;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .card {
+      background: white;
+      padding: 40px;
+      border-radius: 16px;
+      text-align: center;
+      box-shadow: 0 8px 30px rgba(0,0,0,.1);
+    }
+
+    button {
+      padding: 14px 28px;
+      border: none;
+      border-radius: 40px;
+      background: #26c6da;
+      color: white;
+      font-size: 1.1rem;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <h2>Вход в Private Clinic</h2>
+    <p>Подключите MetaMask</p>
+    <button id="loginBtn">Войти через MetaMask</button>
+  </div>
+
+  <script>
+    const loginBtn = document.getElementById("loginBtn");
+
+    loginBtn.onclick = async () => {
+
+      if (!window.ethereum) {
+        alert("MetaMask не найден");
+        return;
+      }
+
+      const accounts = await ethereum.request({
+        method: "eth_requestAccounts"
+      });
+
+      const address = accounts[0];
+
+      localStorage.setItem("walletAddress", address);
+
+      // после логина — на главную
+      window.location.href = "index.html";
+    };
+  </script>
+
+</body>
+</html>
