@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Наши услуги</title>
+  <style>
+    html, body {
+      height: 100%;
+    }
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: #f0f9fc;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    header {
+      background: #26c6da;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      font-size: 1.8rem;
+      font-weight: 500;
+    }
+    main {
+      flex: 1;
+      max-width: 1200px;
+      margin: 20px auto;
+      padding: 0 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+    .service-card {
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      transition: transform 0.2s ease;
+    }
+    .service-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+    .service-card img {
+      width: 150px;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 12px;
+      margin-bottom: 10px;
+    }
+    .service-card p {
+      font-weight: 500;
+      font-size: 1.1rem;
+      color: #1a3c34;
+    }
+    footer {
+      text-align: center;
+      padding: 20px;
+      background: #26c6da;
+      color: white;
+      margin-top: auto;
+    }
+    /* modal styles */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+    }
+    .modal {
+      background: white;
+      border-radius: 12px;
+      max-width: 520px;
+      width: 90%;
+      padding: 20px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+      text-align: center;
+    }
+    .modal img { max-width: 180px; border-radius: 8px; margin-bottom: 12px; }
+    .modal h3 { margin: 8px 0; }
+    .modal p { color: #4b6966; }
+    .modal .actions { margin-top: 14px; display:flex; gap:10px; justify-content:center; }
+    .modal .btn { padding:8px 14px; border-radius:10px; background:#26c6da; color:white; text-decoration:none; }
+    .modal .close { background:#eee; color:#333; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div style="max-width:1200px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; padding:0 20px;">
+      <a href="../index.html" style="text-decoration:none; font-size:1.8rem; font-weight:500; color:white;">Private<span style="font-weight:500;">Clinic</span></a>
+      <h1 style="margin:0; font-size:1.8rem; font-weight:500;">Наши медицинские услуги</h1>
+    </div>
+  </header>
+
+  <main>
+    <div class="service-card">
+      <img src="../images/анализКала.jpg" alt="Анализ мочи" data-service="urine">
+      <p>Анализ мочи</p>
+    </div>
+
+    <div class="service-card">
+      <img src="../images/анализКала.jpg" alt="Анализ кала" data-service="stool">
+      <p>Анализ кала</p>
+    </div>
+
+    <div class="service-card">
+      <img src="../images/анализКрови.jpg" alt="Анализ крови" data-service="blood">
+      <p>Анализ крови</p>
+    </div>
+
+    <div class="service-card">
+      <img src="../images/Ренгтен.png" alt="Рентген" data-service="xray">
+      <p>Рентген</p>
+    </div>
+
+    <div class="service-card">
+      <img src="../images/ЭКГ.png" alt="ЭКГ" data-service="ecg">
+      <p>ЭКГ</p>
+    </div>
+
+    <div class="service-card">
+      <img src="../images/УЗИ.jpg" alt="УЗИ" data-service="ultrasound">
+      <p>УЗИ</p>
+    </div>
+
+    <div class="service-card">
+      <img src="../images/МРТ.jpg" alt="МРТ" data-service="mri">
+      <p>МРТ</p>
+    </div>
+
+    <div class="service-card">
+      <img src="../images/Вакцинация.jpeg" alt="Вакцинация" data-service="vaccination">
+      <p>Вакцинация</p>
+    </div>
+
+    <div class="service-card">
+      <img src="../images/Физиотерапия.jpg" alt="Физиотерапия" data-service="physiotherapy">
+      <p>Физиотерапия</p>
+    </div>
+
+    <div class="service-card">
+      <img src="../images/Стоматология.jpeg" alt="Стоматология" data-service="dentistry">
+      <p>Стоматология</p>
+    </div>
+
+    <div class="service-card">
+      <img src="../images/Офтальмология.webp" alt="Офтальмология" data-service="ophthalmology">
+      <p>Офтальмология</p>
+    </div>
+
+    <div class="service-card">
+      <img src="../images/Эндокринология.jpg" alt="Эндокринология" data-service="endocrinology">
+      <p>Эндокринология</p>
+    </div>
+  </main>
+
+  <footer>© 2026 Частная клиника. Все права защищены.</footer>
+
+  <div class="modal-overlay" id="modal">
+    <div class="modal" role="dialog" aria-modal="true">
+      <img id="modalImg" src="" alt="">
+      <h3 id="modalTitle"></h3>
+      <p id="modalDesc"></p>
+      <div class="actions">
+        <a id="moreBtn" class="btn" href="#">Подробнее</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const services = {
+      urine: {title: 'Анализ мочи', short: 'Быстрый тест для выявления инфекций и нарушений мочеполовой системы. Результаты готовы в течение одного дня.', img: '../images/анализКала.jpg'},
+      stool: {title: 'Анализ кала', short: 'Диагностика паразитов и пищеварительных нарушений. Помогает выявить проблемы с пищеварением и инфекции.', img: '../images/анализКала.jpg'},
+      blood: {title: 'Анализ крови', short: 'Общий и биохимический анализ для оценки состояния организма. Выявляет анемию, инфекции и нарушения обмена веществ.', img: '../images/анализКрови.jpg'},
+      xray: {title: 'Рентген', short: 'Изображения костей и органов для диагностики травм и заболеваний. Быстрое и безопасное обследование груди, рук и ног.', img: '../images/Ренгтен.png'},
+      ecg: {title: 'ЭКГ', short: 'Оценка работы сердца и ритма. Выявляет аритмии, ишемию и другие сердечные нарушения в течение 10 минут.', img: '../images/ЭКГ.png'},
+      ultrasound: {title: 'УЗИ', short: 'Безопасное исследование внутренних органов без излучения. Применяется для диагностики органов брюшной полости и сосудов.', img: '../images/УЗИ.jpg'},
+      mri: {title: 'МРТ', short: 'Подробная картина тканей и органов высокого разрешения. Идеально для диагностики опухолей и заболеваний головного мозга.', img: '../images/МРТ.jpg'},
+      vaccination: {title: 'Вакцинация', short: 'Профилактика инфекций с использованием современных вакцин. Защита от гриппа, пневмонии и других опасных заболеваний.', img: '../images/Вакцинация.jpeg'},
+      physiotherapy: {title: 'Физиотерапия', short: 'Процедуры для восстановления после травм и операций. Включает массаж, электротерапию и другие эффективные методы.', img: '../images/Физиотерапия.jpg'},
+      dentistry: {title: 'Стоматология', short: 'Профилактика и лечение зубов и десен. Чистка, пломбирование и консультация по гигиене полости рта.', img: '../images/Стоматология.jpeg'},
+      ophthalmology: {title: 'Офтальмология', short: 'Осмотр зрения и лечение глазных заболеваний. Проверка остроты зрения, диагностика катаракты и глаукомы.', img: '../images/Офтальмология.webp'},
+      endocrinology: {title: 'Эндокринология', short: 'Диагностика и лечение гормональных нарушений. Управление диабетом, проблемами щитовидной железы и метаболизма.', img: '../images/Эндокринология.jpg'}
+    };
+
+    const modal = document.getElementById('modal');
+    const modalImg = document.getElementById('modalImg');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalDesc = document.getElementById('modalDesc');
+    const moreBtn = document.getElementById('moreBtn');
+    document.querySelectorAll('.service-card img').forEach(img => {
+      img.style.cursor = 'pointer';
+      img.addEventListener('click', () => {
+        const key = img.dataset.service;
+        const s = services[key];
+        if (!s) return;
+        modalImg.src = s.img;
+        modalImg.alt = s.title;
+        modalTitle.textContent = s.title;
+        modalDesc.textContent = s.short;
+        moreBtn.href = 'services-detail.html?id=' + encodeURIComponent(key);
+        modal.style.display = 'flex';
+      });
+    });
+
+    modal.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
+  </script>
+
+</body>
+</html>

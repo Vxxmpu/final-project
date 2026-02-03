@@ -46,6 +46,16 @@
       align-items: center;
       padding: 18px 0;
     }
+    .nav-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    .nav-actions .btn {
+      padding: 8px 14px;
+      border-radius: 12px;
+      font-size: 0.95rem;
+    }
     .logo {
       font-size: 1.6rem;
       font-weight: 700;
@@ -152,10 +162,13 @@
   <header>
     <div class="container">
       <nav>
-        <div class="logo">Private<span>Clinic</span></div>
-        <div id="crtBadge" class="crt-badge">
-          <div class="crt-icon">C</div>
-          <span id="crtAmount">0.00 CRT</span>
+        <a href="index.html" style="text-decoration:none;"><div class="logo">Private<span>Clinic</span></div></a>
+        <div class="nav-actions">
+          <a href="service-HTML/services.html" class="btn nav-btn">Услуги</a>
+          <div id="crtBadge" class="crt-badge">
+            <div class="crt-icon">C</div>
+            <span id="crtAmount">0.00 CRT</span>
+          </div>
         </div>
       </nav>
     </div>

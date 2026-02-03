@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Детали услуги</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --accent: #26c6da;
+      --accent-dark: #0097a7;
+      --text: #1a3c34;
+      --muted: #5f7a75;
+      --bg: #f5fcff;
+      --border: #b2ebf2;
+      --shadow: 0 6px 20px rgba(38, 198, 218, 0.12);
+    }
+    
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(135deg, var(--bg) 0%, #e0f7fa 100%);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    /* Header */
+    header {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+      color: white;
+      padding: 20px 0;
+      box-shadow: var(--shadow);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    
+    .header-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .logo {
+      font-size: 1.6rem;
+      font-weight: 700;
+      text-decoration: none;
+      color: white;
+      transition: opacity 0.3s;
+    }
+    
+    .logo:hover {
+      opacity: 0.9;
+    }
+    
+    .header-title {
+      font-size: 1.3rem;
+      font-weight: 500;
+      flex: 1;
+      text-align: center;
+    }
+    
+    /* Main Content */
+    main {
+      flex: 1;
+      max-width: 1200px;
+      width: 100%;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+    
+    .service-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: center;
+    }
+    
+    .service-image {
+      position: relative;
+    }
+    
+    .service-image img {
+      width: 100%;
+      max-width: 400px;
+      border-radius: 16px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+      transition: transform 0.3s ease;
+    }
+    
+    .service-image img:hover {
+      transform: translateY(-5px);
+    }
+    
+    .service-info {
+      background: white;
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    }
+    
+    .service-info h1 {
+      font-size: 2.5rem;
+      color: var(--accent-dark);
+      margin-bottom: 20px;
+      font-weight: 700;
+    }
+    
+    .service-info p {
+      font-size: 1.05rem;
+      line-height: 1.8;
+      color: var(--muted);
+      margin-bottom: 30px;
+    }
+    
+    /* Payment Section */
+    .payment-section {
+      margin-top: 40px;
+      padding-top: 30px;
+      border-top: 2px solid var(--border);
+    }
+    
+    .payment-section h3 {
+      font-size: 1.4rem;
+      color: var(--text);
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
+    
+    .payment-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    
+    .pay-btn {
+      padding: 16px 24px;
+      border: none;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .pay-onsite {
+      background: #f5f5f5;
+      color: var(--text);
+      border: 2px solid #e0e0e0;
+    }
+    
+    .pay-onsite:hover {
+      background: #eeeeee;
+      border-color: var(--muted);
+      transform: translateX(5px);
+    }
+    
+    .pay-card {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+      color: white;
+      box-shadow: var(--shadow);
+    }
+    
+    .pay-card:hover {
+      transform: translateX(5px);
+      box-shadow: 0 10px 30px rgba(38, 198, 218, 0.25);
+    }
+    
+    .pay-token {
+      background: linear-gradient(135deg, #00796b 0%, #004d40 100%);
+      color: white;
+      box-shadow: 0 6px 20px rgba(0, 121, 107, 0.15);
+    }
+    
+    .pay-token:hover {
+      transform: translateX(5px);
+      box-shadow: 0 10px 30px rgba(0, 121, 107, 0.25);
+    }
+    
+    /* Footer */
+    footer {
+      background: var(--accent);
+      color: white;
+      text-align: center;
+      padding: 20px;
+      margin-top: 60px;
+      font-size: 0.95rem;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .service-container {
+        grid-template-columns: 1fr;
+        gap: 30px;
+      }
+      
+      .service-info {
+        padding: 25px;
+      }
+      
+      .service-info h1 {
+        font-size: 1.8rem;
+      }
+      
+      .payment-buttons {
+        flex-direction: column;
+      }
+      
+      .header-title {
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-container">
+      <a href="../index.html" class="logo">Private<span style="color:#b3e5fc;">Clinic</span></a>
+      <div class="header-title">Детали услуги</div>
+      <div style="width: 100px;"></div>
+    </div>
+  </header>
+
+  <main>
+    <div class="service-container">
+      <div class="service-image">
+        <img id="detailImg" src="" alt="Услуга" />
+      </div>
+      
+      <div class="service-info">
+        <h1 id="title">Услуга</h1>
+        <p id="longDesc">Подробное описание услуги появится здесь.</p>
+        
+        <div class="payment-section">
+          <h3>💳 Выберите способ оплаты</h3>
+          <div class="payment-buttons">
+            <button class="pay-btn pay-onsite">📍 Оплатить на месте</button>
+            <button class="pay-btn pay-card">💳 Оплатить картой</button>
+            <button class="pay-btn pay-token">🔐 Оплатить токеном</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    © 2026 Частная клиника. Все права защищены.
+  </footer>
+
+  <script>
+    const services = {
+      urine: {title: 'Анализ мочи', long: 'Лабораторное исследование для выявления инфекций, заболеваний почек и контроля уровня сахара. Анализ мочи помогает обнаружить проблемы с мочеполовой системой на ранней стадии. Результаты готовы в течение одного рабочего дня.', img: '../images/анализКала.jpg'},
+      stool: {title: 'Анализ кала', long: 'Тест для обнаружения паразитов, бактерий и проблем пищеварения. Это исследование выявляет нарушения в работе желудочно-кишечного тракта и помогает определить причину диареи или других проблем. Анализ особенно важен для выявления паразитов и кишечных инфекций.', img: '../images/анализКала.jpg'},
+      blood: {title: 'Анализ крови', long: 'Общий и биохимические анализы для оценки состояния крови и внутренних органов. Исследование выявляет анемию, инфекции и нарушения обмена веществ. Биохимический анализ показывает функцию печени, почек и уровень сахара.', img: '../images/анализКрови.jpg'},
+      xray: {title: 'Рентген', long: 'Рентгеновские снимки для диагностики переломов, патологий легких и других состояний. Метод быстрый и безопасный при правильном использовании. Позволяет выявить пневмонию, туберкулёз и другие заболевания органов грудной клетки.', img: '../images/Ренгтен.png'},
+      ecg: {title: 'ЭКГ', long: 'Исследование электрической активности сердца для выявления аритмий и ишемии. ЭКГ выполняется в течение 10 минут и дает информацию о работе сердца. Это первый тест при подозрении на сердечные проблемы.', img: '../images/ЭКГ.png'},
+      ultrasound: {title: 'УЗИ', long: 'Ультразвуковое исследование внутренних органов, безопасный и быстрый метод без излучения. УЗИ позволяет оценить размер, форму и структуру органов. Применяется для диагностики органов брюшной полости, почек и мочевого пузыря.', img: '../images/УЗИ.jpg'},
+      mri: {title: 'МРТ', long: 'Магнитно-резонансная томография для детальной визуализации мягких тканей. МРТ использует магнитные поля вместо рентгена и совершенно безопасна. Идеально для диагностики опухолей, заболеваний головного мозга и позвоночника.', img: '../images/МРТ.jpg'},
+      vaccination: {title: 'Вакцинация', long: 'Профилактические прививки для защиты от инфекционных заболеваний. Мы используем современные вакцины, одобренные ВОЗ. Вакцинация защищает от гриппа, пневмонии, кори и других опасных инфекций.', img: '../images/Вакцинация.jpeg'},
+      physiotherapy: {title: 'Физиотерапия', long: 'Процедуры восстановления и реабилитации после травм и операций. Физиотерапия помогает восстановить подвижность и уменьшить боль. Включает массаж, электротерапию, магнитотерапию и другие методы.', img: '../images/Физиотерапия.jpg'},
+      dentistry: {title: 'Стоматология', long: 'Лечение и профилактика заболеваний зубов и полости рта. Мы предлагаем чистку, пломбирование, удаление и имплантацию зубов. Консультация по правильной гигиене полости рта входит в каждый визит.', img: '../images/Стоматология.jpeg'},
+      ophthalmology: {title: 'Офтальмология', long: 'Диагностика и лечение заболеваний глаз, коррекция зрения. Проверка остроты зрения, диагностика катаракты, глаукомы и других проблем. Мы помогаем подобрать правильные очки или контактные линзы.', img: '../images/Офтальмология.webp'},
+      endocrinology: {title: 'Эндокринология', long: 'Диагностика и лечение гормональных нарушений и заболеваний щитовидной железы. Специалист управляет диабетом, проблемами щитовидной железы и метаболическими нарушениями. Индивидуальный подход к лечению каждого пациента.', img: '../images/Эндокринология.jpg'}
+    };
+
+    function getParam(name) {
+      const url = new URL(window.location.href);
+      return url.searchParams.get(name);
+    }
+
+    const id = getParam('id');
+    const titleEl = document.getElementById('title');
+    const descEl = document.getElementById('longDesc');
+    const imgEl = document.getElementById('detailImg');
+
+    if (!id || !services[id]) {
+      titleEl.textContent = 'Услуга не найдена';
+      descEl.textContent = 'Выберите услугу на странице услуг.';
+      imgEl.src = '';
+    } else {
+      const s = services[id];
+      titleEl.textContent = s.title;
+      descEl.textContent = s.long;
+      imgEl.src = s.img;
+      imgEl.alt = s.title;
+    }
+  </script>
+
+</body>
+</html>
