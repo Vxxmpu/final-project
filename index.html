@@ -178,7 +178,16 @@
     <div class="container">
       <h1>Современная частная клиника</h1>
       <p>Профилактика, комфорт и персонализированная медицина. Зарабатывайте CRT-токены за каждое посещение и вклад в экосистему клиники.</p>
-      <a href="buyToken.html" class="btn">Купить CRT токены</a>
+      <div style="display:flex; justify-content:center; gap:16px; flex-wrap:wrap;">
+  <a href="service-HTML/services.html" class="btn">
+    Записаться на услугу
+  </a>
+
+  <a href="buyToken.html" class="btn">
+    Купить CRT токены
+  </a>
+</div>
+
     </div>
   </section>
 
@@ -255,7 +264,7 @@ async function loadCRTForSavedUser() {
   const formatted = ethers.utils.formatUnits(bal, dec);
 
   document.getElementById("crtAmount").textContent =
-    Number(formatted).toFixed(2) + " CRT";
+    Number(formatted).toFixed(4) + " CRT";
 }
 
 

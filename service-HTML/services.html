@@ -17,14 +17,6 @@
       flex-direction: column;
       min-height: 100vh;
     }
-    header {
-      background: #26c6da;
-      color: white;
-      padding: 20px;
-      text-align: center;
-      font-size: 1.8rem;
-      font-weight: 500;
-    }
     main {
       flex: 1;
       max-width: 1200px;
@@ -90,16 +82,81 @@
     .modal .actions { margin-top: 14px; display:flex; gap:10px; justify-content:center; }
     .modal .btn { padding:8px 14px; border-radius:10px; background:#26c6da; color:white; text-decoration:none; }
     .modal .close { background:#eee; color:#333; }
+    
+
+
+header {
+  background: #26c6da; /* тот же голубой, что на главной */
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 20px; /* меньше, чем было, как на главной */
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  font-family: 'Roboto', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 500;
+}
+
+header a {
+  color: white;
+  text-decoration: none;
+  font-size: 1.8rem;
+  font-weight: 500;
+}
+
+.crt-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px; /* точно как на главной */
+  background: #e0f7fa;
+  border-radius: 50px;
+  border: 1px solid #b2ebf2;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  font-size: 0.95rem;
+}
+.crt-badge:hover {
+  background: #26c6da;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(38,198,218,0.12);
+}
+
+.crt-icon {
+  width: 26px;
+  height: 26px;
+  background: #26c6da;
+  color: white;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-weight: bold;
+  font-size: 13px;
+}
+.crtAmount{
+  color: black;
+}
+
+
   </style>
 </head>
 <body>
 
-  <header>
-    <div style="max-width:1200px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; padding:0 20px;">
-      <a href="../index.html" style="text-decoration:none; font-size:1.8rem; font-weight:500; color:white;">Private<span style="font-weight:500;">Clinic</span></a>
-      <h1 style="margin:0; font-size:1.8rem; font-weight:500;">Наши медицинские услуги</h1>
-    </div>
-  </header>
+<header>
+  <a href="../index.html">Private<span>Clinic</span></a>
+  <h1 style="margin:0; font-size:1.8rem; font-weight:500;">Наши медицинские услуги</h1>
+  <div id="crtBadge" class="crt-badge">
+    <div class="crt-icon">C</div>
+    <span id="crtAmount">0.00 CRT</span>
+  </div>
+</header>
+
+
+
 
   <main>
     <div class="service-card">
@@ -214,6 +271,52 @@
 
     modal.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
   </script>
+
+
+<script>
+const badge = document.getElementById("crtBadge");
+const crtAmountEl = document.getElementById("crtAmount");
+
+badge.addEventListener("click", () => {
+  window.location.href = "../buyToken.html"; // путь корректируем относительно services.html
+});
+
+async function loadCRTForSavedUser() {
+  const user = localStorage.getItem("walletAddress");
+  if (!user) return;
+
+  if (!window.ethereum) return;
+
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
+
+  const fund = new ethers.Contract(
+    "0xF68AC1448ba859208b0622A87CF3f3A4d591Cfa3",
+    ["function rewardToken() view returns(address)"],
+    provider
+  );
+
+  const tokenAddress = await fund.rewardToken();
+
+  const token = new ethers.Contract(
+    tokenAddress,
+    [
+      "function balanceOf(address) view returns(uint256)",
+      "function decimals() view returns(uint8)"
+    ],
+    provider
+  );
+
+  const bal = await token.balanceOf(user);
+  const dec = await token.decimals();
+
+  const formatted = ethers.utils.formatUnits(bal, dec);
+
+  crtAmountEl.textContent = Number(formatted).toFixed(4) + " CRT";
+}
+
+loadCRTForSavedUser();
+</script>
+
 
 </body>
 </html>
