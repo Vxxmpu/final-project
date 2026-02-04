@@ -99,7 +99,8 @@ const fundABI = [
 // --- ABI токена
 const tokenABI = [
   "function balanceOf(address owner) view returns (uint256)",
-  "function decimals() view returns (uint8)"
+  "function decimals() view returns (uint8)",
+  "function approve(address spender, uint256 amount) returns (bool)"
 ];
 
 let provider;
@@ -300,3 +301,44 @@ async function updateCRTBadge() {
   }
 }
 
+///burning for paying with token for testburn.html
+async function ensureConnected() {
+  if (!window.ethereum) throw new Error("No wallet");
+
+  if (!provider) {
+    provider = new ethers.providers.Web3Provider(window.ethereum);
+    signer = provider.getSigner();
+  }
+
+  if (!fundContract) {
+    fundContract = new ethers.Contract(contractAddress, fundABI, signer);
+
+    const tokenAddress = await fundContract.rewardToken();
+    tokenContract = new ethers.Contract(tokenAddress, tokenABI, signer);
+  }
+}
+
+async function payForService(tokenAmountHuman, note) {
+
+  await ensureConnected();
+
+  const decimals = await tokenContract.decimals();
+  const amount = ethers.utils.parseUnits(tokenAmountHuman, decimals);
+
+  const tx1 = await tokenContract.approve(contractAddress, amount);
+  await tx1.wait();
+
+  const tx2 = await fundContract.redeemForService(amount, note);
+  await tx2.wait();
+
+  await updateBalances();
+  await updateCRTBadge();
+}
+
+
+const payBtn = document.getElementById("payServiceBtn");
+if (payBtn) {
+  payBtn.onclick = () => {
+    payForService("10", "Blood analysis");
+  };
+}

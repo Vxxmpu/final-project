@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>CRT burn test</title>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+</head>
+<body>
+
+<h2>Test CRT burn</h2>
+<p>Address: <span id="address">—</span></p>
+<p>Network: <span id="network">—</span></p>
+
+
+<button id="connect">Connect wallet</button>
+
+<p>CRT balance: <span id="crtAmount">—</span></p>
+
+<input id="burnAmount" placeholder="CRT amount (e.g. 5)" />
+
+<input id="note" placeholder="Service note" />
+
+<button id="payServiceBtn">Pay service (burn)</button>
+
+<p id="status"></p>
+<p id="error" style="color:red"></p>
+
+<script src="./app.js"></script>
+
+
+</body>
+</html>
