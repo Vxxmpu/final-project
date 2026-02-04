@@ -98,10 +98,12 @@ const fundABI = [
 
 // --- ABI токена
 const tokenABI = [
-  "function balanceOf(address owner) view returns (uint256)",
-  "function decimals() view returns (uint8)",
-  "function approve(address spender, uint256 amount) returns (bool)"
+  "function balanceOf(address) view returns(uint256)",
+  "function decimals() view returns(uint8)",
+  "function approve(address spender, uint256 amount) returns (bool)",
+  "function allowance(address owner, address spender) view returns (uint256)"
 ];
+
 
 let provider;
 let signer;
@@ -163,40 +165,38 @@ async function tryAutoConnect() {
 }
 
 async function connect() {
-
   if (!window.ethereum) {
     alert("Install MetaMask");
     return;
   }
 
   try {
-
     await window.ethereum.request({ method: "eth_requestAccounts" });
 
     provider = new ethers.providers.Web3Provider(window.ethereum);
     signer = provider.getSigner();
 
     const addr = await signer.getAddress();
-    document.getElementById("address").innerText = addr;
+
+    // безопасно обновляем элементы, если они есть
+    const addressEl = document.getElementById("address");
+    if (addressEl) addressEl.innerText = addr;
 
     const network = await provider.getNetwork();
-    document.getElementById("network").innerText =
-      network.chainId === 11155111 ? "Sepolia ✅" : "Wrong network";
+    const networkEl = document.getElementById("network");
+    if (networkEl) {
+      networkEl.innerText = network.chainId === 11155111 ? "Sepolia ✅" : "Wrong network";
+    }
 
     fundContract = new ethers.Contract(contractAddress, fundABI, signer);
 
     const tokenAddress = await fundContract.rewardToken();
-    console.log("Token from fund:", tokenAddress);
-
     tokenContract = new ethers.Contract(tokenAddress, tokenABI, signer);
-
-    await updateBalances();
-    await updateCRTBadge();
 
   } catch (err) {
     console.error(err);
-    document.getElementById("error").innerText =
-      "Connect failed: " + (err.message || err);
+    const errEl = document.getElementById("error");
+    if (errEl) errEl.innerText = "Connect failed: " + (err.reason || err.message || err);
   }
 }
 
@@ -327,7 +327,13 @@ async function payForService(tokenAmountHuman, note) {
 
   const tx1 = await tokenContract.approve(contractAddress, amount);
   await tx1.wait();
+  
+const allowance = await tokenContract.allowance(
+  await signer.getAddress(),
+  contractAddress
+);
 
+console.log("allowance:", allowance.toString());
   const tx2 = await fundContract.redeemForService(amount, note);
   await tx2.wait();
 
@@ -335,10 +341,25 @@ async function payForService(tokenAmountHuman, note) {
   await updateCRTBadge();
 }
 
-
+//testburn pay button handler
 const payBtn = document.getElementById("payServiceBtn");
+
 if (payBtn) {
-  payBtn.onclick = () => {
-    payForService("10", "Blood analysis");
+  payBtn.onclick = async () => {
+
+    const amountStr = document.getElementById("burnAmount").value.trim();
+    const note = document.getElementById("note").value.trim();
+
+    if (!amountStr || isNaN(amountStr)) {
+      alert("Enter valid CRT amount");
+      return;
+    }
+
+    if (!note) {
+      alert("Enter service note");
+      return;
+    }
+
+    await payForService(amountStr, note);
   };
 }
