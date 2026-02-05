@@ -5,9 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Наши услуги</title>
   <style>
-    html, body {
-      height: 100%;
-    }
+    :root{ --bg: #f5fcff; --card-bg: #ffffff; --text: #1a3c34; --muted: #5f7a75; --accent:#26c6da; --accent-dark:#0097a7; --border:#b2ebf2; --shadow: 0 6px 20px rgba(38, 198, 218, 0.12); }
     body {
       font-family: 'Roboto', sans-serif;
       background: #f0f9fc;
@@ -86,50 +84,69 @@
 
 
 header {
-  background: #26c6da; /* тот же голубой, что на главной */
-  color: white;
+  position: sticky;
+  top: 0;
+  background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+  z-index: 100;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+.container {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+nav {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 14px 20px; /* меньше, чем было, как на главной */
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  font-family: 'Roboto', sans-serif;
-  font-size: 1.8rem;
-  font-weight: 500;
+  padding: 18px 0;
 }
-
-header a {
-  color: white;
+.nav-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.nav-actions .btn {
+  padding: 8px 14px;
+  border-radius: 12px;
+  font-size: 0.95rem;
   text-decoration: none;
-  font-size: 1.8rem;
-  font-weight: 500;
+  background: var(--accent);
+  color: white;
 }
+.logo {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--accent-dark);
+}
+.logo span { color: var(--accent); }
+header a { text-decoration:none; }
 
 .crt-badge {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 8px 14px; /* точно как на главной */
+  padding: 8px 14px;
   background: #e0f7fa;
   border-radius: 50px;
-  border: 1px solid #b2ebf2;
+  border: 1px solid var(--border);
   cursor: pointer;
   transition: all 0.25s ease;
   font-size: 0.95rem;
 }
 .crt-badge:hover {
-  background: #26c6da;
+  background: var(--accent);
   color: white;
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(38,198,218,0.12);
+  box-shadow: var(--shadow);
 }
 
 .crt-icon {
   width: 26px;
   height: 26px;
-  background: #26c6da;
+  background: var(--accent);
   color: white;
   border-radius: 50%;
   display: grid;
@@ -137,23 +154,26 @@ header a {
   font-weight: bold;
   font-size: 13px;
 }
-.crtAmount{
-  color: black;
-}
 
-
-  </style>
+  </style> 
 </head>
 <body>
 
 <header>
-  <a href="../index.html">Private<span>Clinic</span></a>
-  <h1 style="margin:0; font-size:1.8rem; font-weight:500;">Наши медицинские услуги</h1>
-  <div id="crtBadge" class="crt-badge">
-    <div class="crt-icon">C</div>
-    <span id="crtAmount">0.00 CRT</span>
+  <div class="container">
+    <nav>
+      <a href="../index.html" style="text-decoration:none;"><div class="logo">Private<span>Clinic</span></div></a>
+      <div class="nav-actions">
+        <a href="services.html" class="btn nav-btn">Услуги</a>
+        <div id="crtBadge" class="crt-badge">
+          <div class="crt-icon">C</div>
+          <span id="crtAmount">0.00 CRT</span>
+        </div>
+      </div>
+    </nav>
   </div>
 </header>
+
 
 
 
