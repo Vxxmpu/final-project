@@ -219,57 +219,100 @@
   </footer>
 
  <script>
-const FUND_ADDRESS = "0xF68AC1448ba859208b0622A87CF3f3A4d591Cfa3";
-const fundABI = ["function rewardToken() view returns(address)"];
+const FUND_ADDRESS = "0xB8e2bacA218aB1513DA789413B556D5B9df7Af87";
+
+const fundABI = [
+  "function rewardToken() view returns(address)"
+];
+
 const tokenABI = [
   "function balanceOf(address) view returns(uint256)",
   "function decimals() view returns(uint8)"
 ];
 
-const crtAmountEl = document.getElementById("crtAmount");
+let provider;
+let signer;
+let fundContract;
+let tokenContract;
+
 const badge = document.getElementById("crtBadge");
+const crtAmountEl = document.getElementById("crtAmount");
 
-badge.addEventListener("click", () => {
-  window.location.href = "buyToken.html";
-});
-async function loadCRTForSavedUser() {
+if (badge) {
+  badge.addEventListener("click", () => {
+    window.location.href = "buyToken.html";
+  });
+}
 
-  const user = localStorage.getItem("walletAddress");
-  if (!user) return;
+async function updateCRTBadge() {
+
+  if (!crtAmountEl) return;
+
+  if (!signer || !tokenContract) {
+    crtAmountEl.textContent = "— CRT";
+    return;
+  }
+
+  try {
+    const addr = await signer.getAddress();
+    const raw = await tokenContract.balanceOf(addr);
+    const decimals = await tokenContract.decimals();
+
+    const formatted = ethers.utils.formatUnits(raw, decimals);
+
+    crtAmountEl.textContent =
+      Number(formatted).toFixed(4) + " CRT";
+
+  } catch (e) {
+    crtAmountEl.textContent = "— CRT";
+  }
+}
+
+async function tryAutoConnect() {
 
   if (!window.ethereum) return;
 
-  const provider = new ethers.providers.Web3Provider(window.ethereum);
+  const accounts = await window.ethereum.request({
+    method: "eth_accounts"
+  });
 
-  const fund = new ethers.Contract(
-    "0xF68AC1448ba859208b0622A87CF3f3A4d591Cfa3",
-    ["function rewardToken() view returns(address)"],
-    provider
+  if (!accounts || accounts.length === 0) return;
+
+  provider = new ethers.providers.Web3Provider(window.ethereum);
+  signer = provider.getSigner();
+
+  fundContract = new ethers.Contract(
+    FUND_ADDRESS,
+    fundABI,
+    signer
   );
 
-  const tokenAddress = await fund.rewardToken();
+  const tokenAddress = await fundContract.rewardToken();
 
-  const token = new ethers.Contract(
+  tokenContract = new ethers.Contract(
     tokenAddress,
-    [
-      "function balanceOf(address) view returns(uint256)",
-      "function decimals() view returns(uint8)"
-    ],
-    provider
+    tokenABI,
+    signer
   );
 
-  const bal = await token.balanceOf(user);
-  const dec = await token.decimals();
-
-  const formatted = ethers.utils.formatUnits(bal, dec);
-
-  document.getElementById("crtAmount").textContent =
-    Number(formatted).toFixed(4) + " CRT";
+  await updateCRTBadge();
 }
 
+window.addEventListener("load", () => {
+  tryAutoConnect();
+});
 
-loadCRTForSavedUser();
+if (window.ethereum) {
+  window.ethereum.on("accountsChanged", async () => {
+    await tryAutoConnect();
+  });
+
+  window.ethereum.on("chainChanged", () => {
+    window.location.reload();
+  });
+}
 </script>
+
 
 </body>
 </html>
