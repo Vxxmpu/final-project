@@ -57,4 +57,5 @@ async function redeem(priceCRT, serviceName) {
       err.reason || err.message;
     document.getElementById("status").innerText = "";
   }
+  
 }
