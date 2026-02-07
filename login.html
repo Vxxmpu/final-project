@@ -103,11 +103,15 @@
 
       // Save user in database (create or update last_login)
       try {
+        console.log('Attempting to save user:', address);
         const existing = await dbFunctions.getUser(address);
+        console.log('User exists:', existing);
         if (!existing) {
-          await dbFunctions.createUser(address);
+          const newUser = await dbFunctions.createUser(address);
+          console.log('Created new user:', newUser);
         } else {
           await dbFunctions.updateUser(address, { last_login: new Date().toISOString() });
+          console.log('Updated last_login for existing user');
         }
       } catch (dbErr) {
         console.error('DB error on login:', dbErr);

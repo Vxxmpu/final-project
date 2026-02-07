@@ -42,13 +42,16 @@ async function redeem(priceCRT, serviceName) {
       return;
     }
 
-    document.getElementById("status").innerText = "Отправка транзакции...";
-    document.getElementById("error").innerText = "";
+    const statusEl = document.getElementById("status");
+    const errorEl = document.getElementById("error");
+    if (statusEl) statusEl.innerText = "Отправка транзакции...";
+    if (errorEl) errorEl.innerText = "";
 
     const tx = await fund.redeemForService(price, serviceName);
     const receipt = await tx.wait();
 
-    document.getElementById("status").innerText =
+    const successStatusEl = document.getElementById("status");
+    if (successStatusEl) successStatusEl.innerText =
       `Услуга "${serviceName}" успешно оплачена`;
 
     // Save order to database (best-effort)
@@ -61,9 +64,10 @@ async function redeem(priceCRT, serviceName) {
 
   } catch (err) {
     console.error(err);
-    document.getElementById("error").innerText =
-      err.reason || err.message;
-    document.getElementById("status").innerText = "";
+    const errorEl = document.getElementById("error");
+    const statusEl = document.getElementById("status");
+    if (errorEl) errorEl.innerText = err.reason || err.message;
+    if (statusEl) statusEl.innerText = "";
   }
   
 }
