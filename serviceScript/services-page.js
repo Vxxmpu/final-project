@@ -40,55 +40,15 @@
 
   if (modal) modal.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
 
-  // CRT badge click and load balance for saved user
-  (function attachBadgeAndLoad(){
+  // CRT badge click
+  (function attachBadge(){
     const badge = document.getElementById("crtBadge");
-    const crtAmountEl = document.getElementById("crtAmount");
-    if (!badge || !crtAmountEl) return;
+    if (!badge) return;
 
     badge.addEventListener("click", () => {
-      // choose path relative to current location
       const path = location.pathname.includes('/service-HTML/') ? '../buyToken.html' : 'buyToken.html';
       window.location.href = path;
     });
-
-    async function loadCRTForSavedUser() {
-      const user = localStorage.getItem("walletAddress");
-      if (!user) return;
-      if (!window.ethereum) return;
-
-      try {
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
-
-        const fund = new ethers.Contract(
-          "0xF68AC1448ba859208b0622A87CF3f3A4d591Cfa3",
-          ["function rewardToken() view returns(address)"],
-          provider
-        );
-
-        const tokenAddress = await fund.rewardToken();
-
-        const token = new ethers.Contract(
-          tokenAddress,
-          [
-            "function balanceOf(address) view returns(uint256)",
-            "function decimals() view returns(uint8)"
-          ],
-          provider
-        );
-
-        const bal = await token.balanceOf(user);
-        const dec = await token.decimals();
-
-        const formatted = ethers.utils.formatUnits(bal, dec);
-
-        crtAmountEl.textContent = Number(formatted).toFixed(4) + " CRT";
-      } catch (err) {
-        console.error('Failed loading saved user CRT:', err);
-      }
-    }
-
-    loadCRTForSavedUser();
   })();
 
   // Try to load services from database and replace static list if present
@@ -119,11 +79,13 @@
   })();
 
   // Initialize badge using app.js helper if available
-  window.addEventListener("load", async () => {
+  // Also manually check localStorage for saved wallet and try to load balance immediately
+  (async function initBadgeImmediately() {
+    // Try using global function first (from app.js)
     if (typeof initializeAndUpdateBadge === 'function') {
-      try { await initializeAndUpdateBadge(); } catch(e){ console.error(e); }
+      try { await initializeAndUpdateBadge(); } catch(e){ console.error('Error in initializeAndUpdateBadge:', e); }
     }
-  });
+  })();
 
   // account and chain listeners
   if (window.ethereum) {

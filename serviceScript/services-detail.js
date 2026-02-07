@@ -97,12 +97,12 @@
     });
   }
 
-  // Initialize on page load
-  window.addEventListener("load", async () => {
+  // Initialize on page load (immediately, not waiting for load event)
+  (async function initBadgeImmediately() {
     if (typeof initializeAndUpdateBadge === 'function') {
-      try { await initializeAndUpdateBadge(); } catch(e){ console.error(e); }
+      try { await initializeAndUpdateBadge(); } catch(e){ console.error('Error in initializeAndUpdateBadge:', e); }
     }
-  });
+  })();
 
   // Listen for account changes
   if (window.ethereum) {
