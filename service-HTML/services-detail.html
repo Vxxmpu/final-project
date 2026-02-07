@@ -500,6 +500,70 @@ if(window.ethereum){
     location.reload();
   });
 }
+/* ----------------------------
+   CRT Badge — полный рабочий вариант
+-----------------------------*/
+const crtBadgeEl = document.getElementById("crtBadge");
+const crtAmountEl = document.getElementById("crtAmount");
+
+async function ensureBadgeConnected() {
+  if (!window.ethereum) return;
+
+  try {
+    if (!provider) provider = new ethers.providers.Web3Provider(window.ethereum);
+    if (!signer) signer = provider.getSigner();
+    if (!fundContract) {
+      fundContract = new ethers.Contract(contractAddress, fundABI, signer);
+      const tokenAddress = await fundContract.rewardToken();
+      tokenContract = new ethers.Contract(tokenAddress, tokenABI, signer);
+    }
+  } catch (e) {
+    console.error("CRT badge connect error", e);
+  }
+}
+
+async function updateBadge() {
+  if (!crtAmountEl) return;
+  if (!tokenContract || !signer) {
+    crtAmountEl.innerText = "— CRT";
+    return;
+  }
+
+  try {
+    const addr = await signer.getAddress();
+    const raw = await tokenContract.balanceOf(addr);
+    const decimals = await tokenContract.decimals();
+    crtAmountEl.innerText = Number(ethers.utils.formatUnits(raw, decimals)).toFixed(4) + " CRT";
+  } catch (err) {
+    console.error("CRT badge update error", err);
+    crtAmountEl.innerText = "— CRT";
+  }
+}
+
+// инициализация при загрузке страницы
+window.addEventListener("load", async () => {
+  await ensureBadgeConnected();
+  await updateBadge();
+});
+
+// обновление при смене аккаунта или сети
+if (window.ethereum) {
+  window.ethereum.on("accountsChanged", async () => {
+    await ensureBadgeConnected();
+    await updateBadge();
+  });
+  window.ethereum.on("chainChanged", async () => {
+    location.reload();
+  });
+}
+
+// клик на бейдж
+if (crtBadgeEl) {
+  crtBadgeEl.onclick = () => {
+    window.location.href = "../buyToken.html";
+  };
+}
+
 </script>
 
   <script src="../serviceScript/services.js"></script>
