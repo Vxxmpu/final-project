@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Вход — Private Clinic</title>
+  <title>Sign In — Private Clinic</title>
 
   <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -66,7 +66,7 @@
       <nav>
         <a href="index.html" style="text-decoration:none;"><div class="logo">Private<span>Clinic</span></div></a>
         <div class="nav-actions">
-          <a href="service-HTML/services.html" class="btn nav-btn">Услуги</a>
+          <a href="service-HTML/services.html" class="btn nav-btn">Services</a>
           <div id="crtBadge" class="crt-badge"><div class="crt-icon">C</div><span id="crtAmount">0.00 CRT</span></div>
         </div>
       </nav>
@@ -74,9 +74,9 @@
   </header>
 
   <div class="card">
-    <h2>Вход в Private Clinic</h2>
-    <p>Подключите MetaMask</p>
-    <button id="loginBtn">Войти через MetaMask</button>
+    <h2>Sign in to Private Clinic</h2>
+    <p>Connect MetaMask</p>
+    <button id="loginBtn">Sign in with MetaMask</button>
   </div>
 
   <script>
@@ -85,7 +85,7 @@
 
     document.getElementById("loginBtn").onclick = async () => {
       if (!window.ethereum) {
-        alert("MetaMask не найден");
+        alert("MetaMask not found");
         return;
       }
 
@@ -113,7 +113,7 @@
         console.error('DB error on login:', dbErr);
       }
 
-      // после логина — на главную
+      // after login — go to home
       window.location.href = "index.html";
     };
     

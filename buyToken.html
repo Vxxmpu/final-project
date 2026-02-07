@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Купить CRT — Private Clinic</title>
+  <title>Buy CRT — Private Clinic</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -173,7 +173,7 @@
       <nav>
         <a href="index.html" style="text-decoration:none;"><div class="logo">Private<span>Clinic</span></div></a>
         <div class="nav-actions">
-          <a href="service-HTML/services.html" class="btn nav-btn">Услуги</a>
+          <a href="service-HTML/services.html" class="btn nav-btn">Services</a>
           <div id="crtBadge" class="crt-badge">
             <div class="crt-icon">C</div>
             <span id="crtAmount">0.00 CRT</span>
@@ -184,36 +184,36 @@
   </header>
 
   <main class="container">
-    <h1>Купить CRT токены</h1>
+    <h1>Buy CRT Tokens</h1>
 
     <div class="info-box">
-      <p>Внесите тестовый ETH в фонд лояльности клиники и мгновенно получите CRT токены. Используйте их для услуг, приоритетной записи и специальных программ.</p>
+      <p>Contribute test ETH to the clinic loyalty fund and instantly receive CRT tokens. Use them for services, priority booking, and special programs.</p>
     </div>
 
     <div class="form-box">
-      <button id="connect">Подключить MetaMask</button>
+      <button id="connect">Connect MetaMask</button>
 
-      <p>Адрес: <span id="address">Не подключено</span></p>
-      <p>Сеть: <span id="network">Неизвестно</span></p>
-      <p>Ваш тестовый ETH: <span id="ethBalance">0</span></p>
-      <p>Ваши CRT токены: <span id="tokenBalance">0</span></p>
+      <p>Address: <span id="address">Not connected</span></p>
+      <p>Network: <span id="network">Unknown</span></p>
+      <p>Your test ETH: <span id="ethBalance">0</span></p>
+      <p>Your CRT tokens: <span id="tokenBalance">0</span></p>
 
       <div style="margin: 24px 0;">
-        <label for="amount">Сумма в ETH (например 0.01):</label>
-        <input type="number" id="amount" placeholder="Сумма в ETH (например 0.01)" step="0.0001" min="0.0001">
+        <label for="amount">Amount in ETH (e.g., 0.01):</label>
+        <input type="number" id="amount" placeholder="Amount in ETH (e.g., 0.01)" step="0.0001" min="0.0001">
       </div>
 
-      <button id="contributeBtn" >Внести вклад</button>
+      <button id="contributeBtn" >Contribute</button>
 
       <p id="status"></p>
       <p id="error"></p>
 
-      <button id="refreshBtn" >Обновить балансы</button>
+      <button id="refreshBtn" >Refresh balances</button>
     </div>
   </main>
 
   <footer>
-    © 2026 Private Clinic. Все права защищены.
+    © 2026 Private Clinic. All rights reserved.
   </footer>
 
   <script src="./app.js"></script>

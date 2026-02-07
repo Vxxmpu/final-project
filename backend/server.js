@@ -1,12 +1,18 @@
 import express from 'express'
 import cors from 'cors'
 import dotenv from 'dotenv'
+import path from 'path'
+import { fileURLToPath } from 'url'
 import sql from './db.js'
 
 dotenv.config()
 
 const app = express()
 const PORT = process.env.PORT || 3000
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+const frontendDir = path.resolve(__dirname, '..')
 
 // CORS configuration
 const allowedOrigins = process.env.FRONTEND_URL
@@ -29,6 +35,13 @@ app.use(
   })
 )
 app.use(express.json())
+
+// Serve frontend static files
+app.use(express.static(frontendDir))
+
+app.get('/', (req, res) => {
+  res.sendFile(path.join(frontendDir, 'index.html'))
+})
 
 // ==================== USER ENDPOINTS ====================
 

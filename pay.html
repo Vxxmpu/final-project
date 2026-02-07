@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Оплата — Private Clinic</title>
+<title>Payment — Private Clinic</title>
 
 <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -39,6 +39,7 @@ nav { display:flex; justify-content:space-between; align-items:center; padding:1
 .box { max-width:400px; width:100%; border:1px solid var(--border); background:white; border-radius:16px; padding:28px; box-shadow:0 4px 15px rgba(0,0,0,0.05); margin-top:40px;}
 .hidden { display:none; }
 input, button { width:100%; padding:12px; margin-top:10px; border-radius:8px; border:1px solid #ccc; font-size:1rem; }
+textarea { width:100%; padding:12px; margin-top:10px; border-radius:8px; border:1px solid #ccc; font-size:1rem; resize:vertical; min-height:90px; }
 button { cursor:pointer; border:none; background:var(--accent); color:white; font-weight:500; transition: all 0.3s ease; }
 button:hover { background:var(--accent-dark); transform: translateY(-2px); box-shadow: var(--shadow); }
 footer { background: var(--accent); color: white; text-align:center; padding:2rem 0; margin-top:auto; }
@@ -51,7 +52,7 @@ footer { background: var(--accent); color: white; text-align:center; padding:2re
     <nav>
       <a href="index.html" style="text-decoration:none;"><div class="logo">Private<span>Clinic</span></div></a>
       <div class="nav-actions">
-        <a href="service-HTML/services.html" class="btn nav-btn">Услуги</a>
+        <a href="service-HTML/services.html" class="btn nav-btn">Services</a>
         <div id="crtBadge" class="crt-badge">
           <div class="crt-icon">C</div>
           <span id="crtAmount">0.00 CRT</span>
@@ -63,25 +64,37 @@ footer { background: var(--accent); color: white; text-align:center; padding:2re
 
 <main class="main">
   <div id="cardBox" class="box hidden">
-    <h3>Оплата картой</h3>
-    <input placeholder="Номер карты">
+    <h3>Card Payment</h3>
+    <input placeholder="Card number">
     <input placeholder="MM/YY">
     <input placeholder="CVC">
-    <button id="cardPayBtn">Оплатить картой</button>
+    <button id="cardPayBtn">Pay by card</button>
   </div>
 
   <div id="tokenBox" class="box hidden">
-    <h3>Оплата CRT-токенами</h3>
+    <h3>CRT Token Payment</h3>
     <p>Service: <b id="serviceName"></b></p>
     <p>Amount to burn: <b id="burnAmountDisplay"></b> CRT</p>
-    <button id="tokenPayBtn">Оплатить токеном</button>
+    <button id="tokenPayBtn">Pay with token</button>
     <p id="status" style="margin-top:10px;"></p>
     <p id="error" style="margin-top:10px;color:red;"></p>
+  </div>
+
+  <div id="appointmentBox" class="box hidden">
+    <h3>Appointment Booking</h3>
+    <input id="patientName" placeholder="Full name">
+    <input id="patientPhone" placeholder="Phone">
+    <input id="appointmentDate" type="date">
+    <input id="appointmentTime" type="time">
+    <textarea id="appointmentNotes" placeholder="Comment (optional)"></textarea>
+    <button id="appointmentSubmit">Book appointment</button>
+    <p id="appointmentStatus" style="margin-top:10px;"></p>
+    <p id="appointmentError" style="margin-top:10px;color:red;"></p>
   </div>
 </main>
 
 <footer>
-  © 2026 Private Clinic. Все права защищены.
+  © 2026 Private Clinic. All rights reserved.
 </footer>
 
 <script>
@@ -158,16 +171,96 @@ async function payForService(tokenAmountHuman){
     await tx1.wait();
     const tx2 = await fundContract.redeemForService(amount, serviceName);
     const receipt = await tx2.wait();
-    document.getElementById("status").innerText="Оплата успешно проведена!";
+    document.getElementById("status").innerText="Payment completed successfully!";
     await updateCRTBadge();
   } catch(err){
     console.error(err);
-    document.getElementById("error").innerText = "Ошибка: "+(err.reason||err.message||err);
+    document.getElementById("error").innerText = "Error: "+(err.reason||err.message||err);
   }
+}
+
+// ------------------- Appointment form
+function getAppointmentISO(dateValue, timeValue){
+  if(!dateValue) return null;
+  const time = timeValue || "09:00";
+  const dt = new Date(`${dateValue}T${time}`);
+  if(Number.isNaN(dt.getTime())) return null;
+  return dt.toISOString();
+}
+
+async function submitAppointment(){
+  const statusEl = document.getElementById("appointmentStatus");
+  const errorEl = document.getElementById("appointmentError");
+  statusEl.textContent = "";
+  errorEl.textContent = "";
+
+  const name = document.getElementById("patientName").value.trim();
+  const phone = document.getElementById("patientPhone").value.trim();
+  const dateValue = document.getElementById("appointmentDate").value;
+  const timeValue = document.getElementById("appointmentTime").value;
+  const notes = document.getElementById("appointmentNotes").value.trim();
+
+  if(!name || !phone || !dateValue){
+    errorEl.textContent = "Please fill in full name, phone, and date.";
+    return;
+  }
+
+  const appointmentDate = getAppointmentISO(dateValue, timeValue);
+  if(!appointmentDate){
+    errorEl.textContent = "Invalid date or time.";
+    return;
+  }
+
+  let wallet = null;
+  try { if(signer) wallet = await signer.getAddress(); } catch(e) {}
+
+  const payloadNotes = [
+    `Full name: ${name}`,
+    `Phone: ${phone}`,
+    notes ? `Comment: ${notes}` : null
+  ].filter(Boolean).join("\n");
+
+  if(wallet && serviceId){
+    try {
+      const resp = await fetch("/api/appointments",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({
+          wallet_address: wallet,
+          service_id: serviceId,
+          appointment_date: appointmentDate,
+          notes: payloadNotes
+        })
+      });
+      if(!resp.ok){
+        const err = await resp.json().catch(()=>({}));
+        throw new Error(err.error || "Failed to save appointment");
+      }
+      statusEl.textContent = "Appointment created! We will contact you.";
+      return;
+    } catch(err){
+      console.error(err);
+    }
+  }
+
+  statusEl.textContent = "Request sent. We will contact you.";
 }
 
 // ------------------- Load page
 window.addEventListener("load",async()=>{
+  const cardBox=document.getElementById("cardBox");
+  const tokenBox=document.getElementById("tokenBox");
+  const appointmentBox=document.getElementById("appointmentBox");
+  if(method==="card"){ cardBox.classList.remove("hidden"); }
+  if(method==="token"){ 
+    tokenBox.classList.remove("hidden");
+    document.getElementById("serviceName").textContent = serviceName;
+    document.getElementById("burnAmountDisplay").textContent = crt || "0";
+  }
+  if(method==="card" || method==="token"){
+    appointmentBox.classList.remove("hidden");
+  }
+
   if(!window.ethereum) return;
   provider=new ethers.providers.Web3Provider(window.ethereum);
   signer=provider.getSigner();
@@ -175,20 +268,11 @@ window.addEventListener("load",async()=>{
   const tokenAddress = await fundContract.rewardToken();
   tokenContract=new ethers.Contract(tokenAddress,tokenABI,signer);
   await updateCRTBadge();
-
-  const cardBox=document.getElementById("cardBox");
-  const tokenBox=document.getElementById("tokenBox");
-  if(method==="card"){ cardBox.classList.remove("hidden"); }
-  if(method==="token"){ 
-    tokenBox.classList.remove("hidden");
-    document.getElementById("serviceName").textContent = serviceName;
-    document.getElementById("burnAmountDisplay").textContent = crt || "0";
-  }
 });
-//lol
 // ------------------- Handlers
 document.getElementById("cardPayBtn")?.addEventListener("click",()=>{ alert(`Card payment: ${serviceName} (${crt || "0"} CRT equivalent)`); });
 document.getElementById("tokenPayBtn")?.addEventListener("click",async()=>{ await payForService(crt); });
+document.getElementById("appointmentSubmit")?.addEventListener("click",async()=>{ await submitAppointment(); });
 
 if(window.ethereum){
   window.ethereum.on("accountsChanged",async()=>{ await updateCRTBadge(); });

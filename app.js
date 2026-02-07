@@ -1,6 +1,6 @@
 const contractAddress = "0xB8e2bacA218aB1513DA789413B556D5B9df7Af87";
 
-// --- ABI фонда
+// --- Fund ABI
 const fundABI = [
 	{
 		"inputs": [],
@@ -206,7 +206,7 @@ const fundABI = [
 		"type": "function"
 	}
 ]
-// --- ABI токена
+// --- Token ABI
 const tokenABI = [
   "function balanceOf(address) view returns(uint256)",
   "function decimals() view returns(uint8)",
@@ -262,7 +262,7 @@ async function tryAutoConnect() {
   });
 
   if (!accounts || accounts.length === 0) {
-    return; // пользователь не подключал сайт
+	return; // user has not connected the site
   }
 
   provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -320,7 +320,7 @@ async function connect() {
 
     const addr = await signer.getAddress();
 
-    // безопасно обновляем элементы, если они есть
+	// safely update elements if they exist
     const addressEl = document.getElementById("address");
     if (addressEl) addressEl.innerText = addr;
 
@@ -423,7 +423,7 @@ async function contribute() {
 async function updateCRTBadge() {
 
   const el = document.getElementById("crtAmount");
-  if (!el) return; // если страницы без бейджа
+	if (!el) return; // pages without badge
 
   if (!signer || !tokenContract) {
     el.innerText = "— CRT";
