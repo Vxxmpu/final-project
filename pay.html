@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Pay</title>
+
+<script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+<script src="api.js"></script> <!-- если там есть redeem / burn -->
+<script src="app.js"></script> <!-- инициализация провайдера, signer, баланс CRT -->
+
+<style>
+body{font-family:Arial;padding:40px}
+.box{max-width:400px;border:1px solid #ccc;padding:20px;border-radius:10px}
+.hidden{display:none}
+input,button{width:100%;padding:10px;margin-top:10px}
+</style>
+</head>
+<body>
+
+<h2>Оплата</h2>
+
+<p>Service id: <b id="sid"></b></p>
+<p>Amount: <b id="amount"></b></p>
+
+<div id="cardBox" class="box hidden">
+  <h3>Card payment</h3>
+  <input placeholder="Card number">
+  <input placeholder="MM/YY">
+  <input placeholder="CVC">
+  <button id="cardPayBtn">Pay (card)</button>
+</div>
+
+<div id="tokenBox" class="box hidden">
+  <h3>Token payment</h3>
+
+  <label>CRT to burn</label>
+  <input id="burnInput" readonly>
+
+  <button id="tokenPayBtn">Pay with CRT</button>
+
+  <p id="status"></p>
+  <p id="error" style="color:red"></p>
+</div>
+
+<script>
+function q(n){
+  return new URL(location.href).searchParams.get(n);
+}
+
+const method = q("method");
+const id     = q("id");
+const usd    = q("usd");
+const crt    = q("crt");
+
+document.getElementById("sid").innerText = id;
+
+const amountEl = document.getElementById("amount");
+const cardBox  = document.getElementById("cardBox");
+const tokenBox = document.getElementById("tokenBox");
+
+if(method === "card"){
+  cardBox.classList.remove("hidden");
+  amountEl.innerText = usd + " USD";
+}
+
+if(method === "token"){
+  tokenBox.classList.remove("hidden");
+  amountEl.innerText = crt + " CRT";
+  document.getElementById("burnInput").value = crt;
+}
+
+document.getElementById("cardPayBtn")?.addEventListener("click", () => {
+  alert("Card payment mock: " + usd + " USD");
+});
+
+// 🔥 Логика burn CRT при оплате
+document.getElementById("tokenPayBtn")?.addEventListener("click", async () => {
+  const amount = crt; // CRT, который надо сжечь
+  const serviceId = id;
+
+  document.getElementById("status").innerText = "Processing...";
+  document.getElementById("error").innerText = "";
+
+  try{
+    // здесь вызывается функция burn/redeem из testburn
+    // если у тебя в app.js есть функция redeem(amount, serviceId), она готова
+    await redeem(amount, serviceId);
+
+    document.getElementById("status").innerText = "Paid with CRT!";
+    alert("Оплата CRT успешно завершена!");
+  }catch(e){
+    console.error(e);
+    document.getElementById("error").innerText = e.reason || e.message || e;
+    document.getElementById("status").innerText = "Failed";
+  }
+});
+
+// инициализация и обновление баланса CRT (если есть функция initializeAndUpdateBadge)
+window.addEventListener("load", async () => {
+  if(typeof initializeAndUpdateBadge === "function"){
+    await initializeAndUpdateBadge();
+  }
+});
+</script>
+
+</body>
+</html>

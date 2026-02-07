@@ -323,125 +323,185 @@
     © 2026 Частная клиника. Все права защищены.
   </footer>
 
-  <script>
-    const services = {
-      urine: {title: 'Анализ мочи', long: 'Лабораторное исследование для выявления инфекций, заболеваний почек и контроля уровня сахара. Анализ мочи помогает обнаружить проблемы с мочеполовой системой на ранней стадии. Результаты готовы в течение одного рабочего дня.', img: '../images/анализКала.jpg', price: 5000},
-      stool: {title: 'Анализ кала', long: 'Тест для обнаружения паразитов, бактерий и проблем пищеварения. Это исследование выявляет нарушения в работе желудочно-кишечного тракта и помогает определить причину диареи или других проблем. Анализ особенно важен для выявления паразитов и кишечных инфекций.', img: '../images/анализКала.jpg', price: 5000},
-      blood: {title: 'Анализ крови', long: 'Общий и биохимические анализы для оценки состояния крови и внутренних органов. Исследование выявляет анемию, инфекции и нарушения обмена веществ. Биохимический анализ показывает функцию печени, почек и уровень сахара.', img: '../images/анализКрови.jpg', price: 7000},
-      xray: {title: 'Рентген', long: 'Рентгеновские снимки для диагностики переломов, патологий легких и других состояний. Метод быстрый и безопасный при правильном использовании. Позволяет выявить пневмонию, туберкулёз и другие заболевания органов грудной клетки.', img: '../images/Ренгтен.png', price: 15000},
-      ecg: {title: 'ЭКГ', long: 'Исследование электрической активности сердца для выявления аритмий и ишемии. ЭКГ выполняется в течение 10 минут и дает информацию о работе сердца. Это первый тест при подозрении на сердечные проблемы.', img: '../images/ЭКГ.png', price: 8000},
-      ultrasound: {title: 'УЗИ', long: 'Ультразвуковое исследование внутренних органов, безопасный и быстрый метод без излучения. УЗИ позволяет оценить размер, форму и структуру органов. Применяется для диагностики органов брюшной полости, почек и мочевого пузыря.', img: '../images/УЗИ.jpg', price: 20000},
-      mri: {title: 'МРТ', long: 'Магнитно-резонансная томография для детальной визуализации мягких тканей. МРТ использует магнитные поля вместо рентгена и совершенно безопасна. Идеально для диагностики опухолей, заболеваний головного мозга и позвоночника.', img: '../images/МРТ.jpg', price: 60000},
-      vaccination: {title: 'Вакцинация', long: 'Профилактические прививки для защиты от инфекционных заболеваний. Мы используем современные вакцины, одобренные ВОЗ. Вакцинация защищает от гриппа, пневмонии, кори и других опасных инфекций.', img: '../images/Вакцинация.jpeg', price: 10000},
-      physiotherapy: {title: 'Физиотерапия', long: 'Процедуры восстановления и реабилитации после травм и операций. Физиотерапия помогает восстановить подвижность и уменьшить боль. Включает массаж, электротерапию, магнитотерапию и другие методы.', img: '../images/Физиотерапия.jpg', price: 12000},
-      dentistry: {title: 'Стоматология', long: 'Лечение и профилактика заболеваний зубов и полости рта. Мы предлагаем чистку, пломбирование, удаление и имплантацию зубов. Консультация по правильной гигиене полости рта входит в каждый визит.', img: '../images/Стоматология.jpeg', price: 25000},
-      ophthalmology: {title: 'Офтальмология', long: 'Диагностика и лечение заболеваний глаз, коррекция зрения. Проверка остроты зрения, диагностика катаракты, глаукомы и других проблем. Мы помогаем подобрать правильные очки или контактные линзы.', img: '../images/Офтальмология.webp', price: 18000},
-      endocrinology: {title: 'Эндокринология', long: 'Диагностика и лечение гормональных нарушений и заболеваний щитовидной железы. Специалист управляет диабетом, проблемами щитовидной железы и метаболическими нарушениями. Индивидуальный подход к лечению каждого пациента.', img: '../images/Эндокринология.jpg', price: 15000}
-    };
+<script>
+const services = {
+  urine: {
+    title: "Urinalysis",
+    long: "Laboratory urine test for infections and kidney disorders.",
+    img: "../images/анализКала.jpg",
+    usd: 12,
+    crt: 0.12
+  },
+  stool: {
+    title: "Stool test",
+    long: "Laboratory stool analysis for parasites and bacteria.",
+    img: "../images/анализКала.jpg",
+    usd: 12,
+    crt: 0.12
+  },
+  blood: {
+    title: "Blood test",
+    long: "General and biochemical blood analysis.",
+    img: "../images/анализКрови.jpg",
+    usd: 18,
+    crt: 0.18
+  },
+  xray: {
+    title: "X-Ray",
+    long: "X-ray imaging diagnostics.",
+    img: "../images/Ренгтен.png",
+    usd: 35,
+    crt: 0.35
+  },
+  ecg: {
+    title: "ECG",
+    long: "Heart rhythm diagnostics.",
+    img: "../images/ЭКГ.png",
+    usd: 20,
+    crt: 0.20
+  },
+  ultrasound: {
+    title: "Ultrasound",
+    long: "Ultrasound diagnostics of internal organs.",
+    img: "../images/УЗИ.jpg",
+    usd: 45,
+    crt: 0.45
+  },
+  mri: {
+    title: "MRI",
+    long: "Magnetic resonance imaging.",
+    img: "../images/МРТ.jpg",
+    usd: 140,
+    crt: 1.40
+  },
+  vaccination: {
+    title: "Vaccination",
+    long: "Preventive vaccination service.",
+    img: "../images/Вакцинация.jpeg",
+    usd: 22,
+    crt: 0.22
+  },
+  physiotherapy: {
+    title: "Physiotherapy",
+    long: "Rehabilitation and recovery procedures.",
+    img: "../images/Физиотерапия.jpg",
+    usd: 28,
+    crt: 0.28
+  },
+  dentistry: {
+    title: "Dentistry",
+    long: "Dental services and treatment.",
+    img: "../images/Стоматология.jpeg",
+    usd: 60,
+    crt: 0.60
+  },
+  ophthalmology: {
+    title: "Ophthalmology",
+    long: "Eye diagnostics and treatment.",
+    img: "../images/Офтальмология.webp",
+    usd: 42,
+    crt: 0.42
+  },
+  endocrinology: {
+    title: "Endocrinology",
+    long: "Hormonal diagnostics and treatment.",
+    img: "../images/Эндокринология.jpg",
+    usd: 35,
+    crt: 0.35
+  }
+};
 
-    function getParam(name) {
-      const url = new URL(window.location.href);
-      return url.searchParams.get(name);
-    }
+function getParam(name) {
+  return new URL(window.location.href).searchParams.get(name);
+}
 
-    // Initialize elements
-    const titleEl = document.getElementById('title');
-    const descEl = document.getElementById('longDesc');
-    const imgEl = document.getElementById('detailImg');
-    const priceTableBody = document.getElementById('priceTableBody');
-    const badge = document.getElementById("crtBadge");
-    const payOnsite = document.querySelector('.pay-onsite');
-    const payCard = document.querySelector('.pay-card');
-    const payToken = document.querySelector('.pay-token');
+const titleEl = document.getElementById("title");
+const descEl  = document.getElementById("longDesc");
+const imgEl   = document.getElementById("detailImg");
+const priceTableBody = document.getElementById("priceTableBody");
 
-    const id = getParam('id');
-    let s = null;
+const payOnsite = document.querySelector(".pay-onsite");
+const payCard   = document.querySelector(".pay-card");
+const payToken  = document.querySelector(".pay-token");
 
-    if (id && services[id]) {
-      s = services[id];
-    }
+const badge = document.getElementById("crtBadge");
 
-    if (!id || !s) {
-      titleEl.textContent = 'Услуга не найдена';
-      descEl.textContent = 'Выберите услугу на странице услуг.';
-      imgEl.src = '';
-      priceTableBody.innerHTML = '';
-    } else {
-      titleEl.textContent = s.title;
-      descEl.textContent = s.long;
-      imgEl.src = s.img;
-      imgEl.alt = s.title;
+const id = getParam("id");
+const s = services[id];
 
-      priceTableBody.innerHTML = `
-        <tr>
-          <td>${s.title}</td>
-          <td>${s.price.toLocaleString('ru-RU')} KZT</td>
-        </tr>
-      `;
-    }
+if(!s){
+  titleEl.textContent = "Service not found";
+  descEl.textContent = "Please select a service from the services page.";
+}else{
+  titleEl.textContent = s.title;
+  descEl.textContent  = s.long;
+  imgEl.src = s.img;
 
-    // CRT Badge click handler
-    if (badge) {
-      badge.addEventListener("click", () => { 
-        window.location.href = "../buyToken.html"; 
-      });
-    }
+  priceTableBody.innerHTML = `
+    <tr>
+      <td>${s.title}</td>
+      <td>$${s.usd} / ${s.crt} CRT</td>
+    </tr>
+  `;
+}
 
-    // Payment buttons
-    if (payOnsite && s) {
-      payOnsite.addEventListener('click', () => {
-        alert(`Вы выбрали оплату на месте. Сумма: ${s.price.toLocaleString('ru-RU')} KZT`);
-      });
-    }
+/* ----------------------------
+   Badge
+-----------------------------*/
+if(badge){
+  badge.onclick = () => {
+    location.href = "../buyToken.html";
+  };
+}
 
-    if (payCard && s) {
-      payCard.addEventListener('click', () => {
-        alert(`Вы выбрали оплату картой. Сумма: ${s.price.toLocaleString('ru-RU')} KZT`);
-      });
-    }
+/* ----------------------------
+   Payments
+-----------------------------*/
 
-    if (payToken && s) {
-      payToken.addEventListener('click', async () => {
-        const discount = 0.15;
-        const charityPercent = 0.10;
-        const priceCRT = s.price * (1 - discount);
-        const charityAmount = priceCRT * charityPercent;
-        const finalAmount = priceCRT - charityAmount;
+if(payOnsite && s){
+  payOnsite.onclick = () => {
+    alert(`Pay on site: $${s.usd}`);
+  };
+}
 
-        if (!confirm(
-          `Вы оплачиваете токенами.\n` +
-          `Цена со скидкой: ${priceCRT.toLocaleString('ru-RU')} KZT\n` +
-          `Charity (10%): ${charityAmount.toLocaleString('ru-RU')} KZT\n` +
-          `Итоговая сумма к списанию: ${finalAmount.toLocaleString('ru-RU')} KZT\n` +
-          `Продолжить?`
-        )) return;
+if(payCard && s){
+  payCard.onclick = () => {
 
-        try {
-          await redeem(finalAmount, s.title);
-          alert('Услуга успешно оплачена токенами!');
-        } catch (err) {
-          console.error(err);
-          alert('Ошибка при оплате токенами: ' + (err.reason || err.message));
-        }
-      });
-    }
-    
-    // Initialize on page load
-    window.addEventListener("load", async () => {
+    // передаём цену В ДОЛЛАРАХ
+    location.href =
+      `../pay.html?method=card&id=${id}&usd=${s.usd}`;
+  };
+}
+
+if(payToken && s){
+  payToken.onclick = () => {
+
+    // передаём цену В CRT
+    location.href =
+      `../pay.html?method=token&id=${id}&crt=${s.crt}`;
+  };
+}
+
+/* badge init from your app.js */
+window.addEventListener("load", async () => {
+  if(window.initializeAndUpdateBadge){
+    await initializeAndUpdateBadge();
+  }
+});
+
+if(window.ethereum){
+  window.ethereum.on("accountsChanged", async () => {
+    if(window.initializeAndUpdateBadge){
       await initializeAndUpdateBadge();
-    });
-    
-    // Listen for account changes
-    if (window.ethereum) {
-      window.ethereum.on("accountsChanged", async () => {
-        await initializeAndUpdateBadge();
-      });
-      
-      window.ethereum.on("chainChanged", () => {
-        window.location.reload();
-      });
     }
-  </script>
+  });
+
+  window.ethereum.on("chainChanged", () => {
+    location.reload();
+  });
+}
+</script>
+
   <script src="../serviceScript/services.js"></script>
   <script src="../serviceScript/services-detail.js"></script>
 
