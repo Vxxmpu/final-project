@@ -13,110 +13,98 @@
   
   <style>
     :root {
-      <script>
-      (async function() {
-        const servicesLocal = {
-          urine: {title: 'Анализ мочи', long: 'Лабораторное исследование для выявления инфекций, заболеваний почек и контроля уровня сахара. Анализ мочи помогает обнаружить проблемы с мочеполовой системой на ранней стадии. Результаты готовы в течение одного рабочего дня.', img: '../images/анализКала.jpg', price: 5000},
-          stool: {title: 'Анализ кала', long: 'Тест для обнаружения паразитов, бактерий и проблем пищеварения. Это исследование выявляет нарушения в работе желудочно-кишечного тракта и помогает определить причину диареи или других проблем. Анализ особенно важен для выявления паразитов и кишечных инфекций.', img: '../images/анализКала.jpg', price: 5000},
-          blood: {title: 'Анализ крови', long: 'Общий и биохимические анализы для оценки состояния крови и внутренних органов. Исследование выявляет анемию, инфекции и нарушения обмена веществ. Биохимический анализ показывает функцию печени, почек и уровень сахара.', img: '../images/анализКрови.jpg', price: 7000},
-          xray: {title: 'Рентген', long: 'Рентгеновские снимки для диагностики переломов, патологий легких и других состояний. Метод быстрый и безопасный при правильном использовании. Позволяет выявить пневмонию, туберкулёз и другие заболевания органов грудной клетки.', img: '../images/Ренгтен.png', price: 15000},
-          ecg: {title: 'ЭКГ', long: 'Исследование электрической активности сердца для выявления аритмий и ишемии. ЭКГ выполняется в течение 10 минут и дает информацию о работе сердца. Это первый тест при подозрении на сердечные проблемы.', img: '../images/ЭКГ.png', price: 8000},
-          ultrasound: {title: 'УЗИ', long: 'Ультразвуковое исследование внутренних органов, безопасный и быстрый метод без излучения. УЗИ позволяет оценить размер, форму и структуру органов. Применяется для диагностики органов брюшной полости и сосудов.', img: '../images/УЗИ.jpg', price: 20000},
-          mri: {title: 'МРТ', long: 'Магнитно-резонансная томография для детальной визуализации мягких тканей. МРТ использует магнитные поля вместо рентгена и совершенно безопасна. Идеально для диагностики опухолей, заболеваний головного мозга и позвоночника.', img: '../images/МРТ.jpg', price: 60000},
-          vaccination: {title: 'Вакцинация', long: 'Профилактические прививки для защиты от инфекционных заболеваний. Мы используем современные вакцины, одобренные ВОЗ. Вакцинация защищает от гриппа, пневмонии, кори и других опасных инфекций.', img: '../images/Вакцинация.jpeg', price: 10000},
-          physiotherapy: {title: 'Физиотерапия', long: 'Процедуры восстановления и реабилитации после травм и операций. Физиотерапия помогает восстановить подвижность и уменьшить боль. Включает массаж, электротерапию, магнитотерапию и другие методы.', img: '../images/Физиотерапия.jpg', price: 12000},
-          dentistry: {title: 'Стоматология', long: 'Лечение и профилактика заболеваний зубов и полости рта. Мы предлагаем чистку, пломбирование, удаление и имплантацию зубов. Консультация по правильной гигиене полости рта входит в каждый визит.', img: '../images/Стоматология.jpeg', price: 25000},
-          ophthalmology: {title: 'Офтальмология', long: 'Диагностика и лечение заболеваний глаз, коррекция зрения. Проверка остроты зрения, диагностика катаракты, глаукомы и других проблем. Мы помогаем подобрать правильные очки или контактные линзы.', img: '../images/Офтальмология.webp', price: 18000},
-          endocrinology: {title: 'Эндокринология', long: 'Диагностика и лечение гормональных нарушений и заболеваний щитовидной железы. Специалист управляет диабетом, проблемами щитовидной железы и метаболическими нарушениями. Индивидуальный подход к лечению каждого пациента.', img: '../images/Эндокринология.jpg', price: 15000}
-        };
+      --accent: #26c6da;
+      --accent-dark: #0097a7;
+      --text: #1a3c34;
+      --muted: #5f7a75;
+      --bg: #f5fcff;
+      --border: #b2ebf2;
+      --shadow: 0 6px 20px rgba(38, 198, 218, 0.12);
+    }
+    
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(135deg, var(--bg) 0%, #e0f7fa 100%);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    /* Header */
+    header {
+      position: sticky;
+      top: 0;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      z-index: 100;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
 
-        function getParam(name) {
-          const url = new URL(window.location.href);
-          return url.searchParams.get(name);
-        }
+    .container {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
 
-        const id = getParam('id');
-        const titleEl = document.getElementById('title');
-        const descEl = document.getElementById('longDesc');
-        const imgEl = document.getElementById('detailImg');
-        const priceTableBody = document.getElementById('priceTableBody');
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 0;
+    }
 
-        let s = null;
-        if (id && servicesLocal[id]) {
-          s = servicesLocal[id];
-        } else if (id) {
-          try {
-            s = await dbFunctions.getServiceById(id);
-          } catch (err) {
-            console.error('Failed to load service from DB:', err);
-          }
-        }
+    .logo {
+      font-size: 1.6rem;
+      font-weight: 700;
+      text-decoration: none;
+      color: var(--accent-dark);
+      transition: opacity 0.3s;
+    }
 
-        if (!id || !s) {
-          titleEl.textContent = 'Услуга не найдена';
-          descEl.textContent = 'Выберите услугу на странице услуг.';
-          imgEl.src = '';
-          priceTableBody.innerHTML = '';
-          return;
-        }
+    .logo span { color: var(--accent); }
 
-        titleEl.textContent = s.title || s.name;
-        descEl.textContent = s.long || s.description || '';
-        imgEl.src = s.img || s.image_url || '';
-        imgEl.alt = s.title || s.name || '';
+    .nav-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
 
-        const priceKzt = s.price_kzt || s.price || s.price_kzt === 0 ? s.price_kzt : s.price;
-        priceTableBody.innerHTML = `
-          <tr>
-            <td>${titleEl.textContent}</td>
-            <td>${(priceKzt || 0).toLocaleString('ru-RU')} KZT</td>
-          </tr>
-        `;
+    .crt-badge {
+      display:flex; align-items:center; gap:10px; padding:8px 14px; background:#e0f7fa; border-radius:50px; border:1px solid var(--border); cursor:pointer; transition: all 0.25s ease;
+    }
+    .crt-badge:hover{ background:var(--accent); color:white; transform:translateY(-2px); box-shadow:var(--shadow); }
+    .crt-icon{ width:26px; height:26px; background:var(--accent); color:white; border-radius:50%; display:grid; place-items:center; font-weight:bold; font-size:13px; }
 
-        // ===== Payment buttons =====
-        const badge = document.getElementById("crtBadge");
-        if (badge) badge.addEventListener("click", () => { window.location.href = "../buyToken.html"; });
+    /* Main Content */
+    main {
+      flex: 1;
+      max-width: 1200px;
+      width: 100%;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
 
-        const payOnsite = document.querySelector('.pay-onsite');
-        const payCard = document.querySelector('.pay-card');
-        const payToken = document.querySelector('.pay-token');
+    .service-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: center;
+    }
 
-        payOnsite.addEventListener('click', () => {
-          alert(`Вы выбрали оплату на месте. Сумма: ${(priceKzt || 0).toLocaleString('ru-RU')} KZT`);
-        });
+    .service-image {
+      position: relative;
+    }
 
-        payCard.addEventListener('click', () => {
-          alert(`Вы выбрали оплату картой. Сумма: ${(priceKzt || 0).toLocaleString('ru-RU')} KZT`);
-        });
-
-        payToken.addEventListener('click', async () => {
-          const discount = 0.15; // 15%
-          const charityPercent = 0.10; // 10%
-          const priceCRT = (priceKzt || 0) * (1 - discount);
-          const charityAmount = priceCRT * charityPercent;
-          const finalAmount = priceCRT - charityAmount;
-
-          if (!confirm(
-            `Вы оплачиваете токенами.\n` +
-            `Цена со скидкой: ${priceCRT.toLocaleString('ru-RU')} KZT\n` +
-            `Charity (10%): ${charityAmount.toLocaleString('ru-RU')} KZT\n` +
-            `Итоговая сумма к списанию: ${finalAmount.toLocaleString('ru-RU')} KZT\n` +
-            `Продолжить?`
-          )) return;
-
-          try {
-            await redeem(finalAmount, s.title || s.name);
-            alert('Услуга успешно оплачена токенами!');
-          } catch (err) {
-            console.error(err);
-            alert('Ошибка при оплате токенами: ' + (err.reason || err.message));
-          }
-        });
-
-      })();
-      </script>
-    .service-image img:hover {
-      transform: translateY(-5px);
+    .service-image img {
+      width: 100%;
+      max-width: 400px;
+      border-radius: 16px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+      transition: transform 0.3s ease;
     }
     
     .service-info {
