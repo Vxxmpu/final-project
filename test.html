@@ -6,6 +6,7 @@
   <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="database/db-functions.js"></script>
+  <script src="app.js"></script>
   <style>
 		:root{ --bg: #f5fcff; --card-bg: #ffffff; --text: #1a3c34; --muted: #5f7a75; --accent:#26c6da; --accent-dark:#0097a7; --border:#b2ebf2; --shadow: 0 6px 20px rgba(38, 198, 218, 0.12); }
 		*{box-sizing:border-box}
@@ -346,6 +347,11 @@ document.getElementById('refreshBtn').onclick = async () => {
       window.ethereum.on('accountsChanged', () => location.reload());
       window.ethereum.on('chainChanged', () => location.reload());
     }
+    
+    // Initialize CRT badge on page load
+    window.addEventListener("load", async () => {
+      await updateCRTBadge();
+    });
   </script>
 	<script>
 		const badge = document.getElementById("crtBadge");

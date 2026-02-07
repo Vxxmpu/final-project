@@ -7,8 +7,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../database/db-functions.js"></script>
+  <script src="../app.js"></script>
   <script src="../serviceScript/services.js"></script>
   
   <style>
@@ -422,6 +424,22 @@
           console.error(err);
           alert('Ошибка при оплате токенами: ' + (err.reason || err.message));
         }
+      });
+    }
+    
+    // Initialize on page load
+    window.addEventListener("load", async () => {
+      await updateCRTBadge();
+    });
+    
+    // Listen for account changes
+    if (window.ethereum) {
+      window.ethereum.on("accountsChanged", async () => {
+        await updateCRTBadge();
+      });
+      
+      window.ethereum.on("chainChanged", () => {
+        window.location.reload();
       });
     }
   </script>
