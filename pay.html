@@ -1,106 +1,199 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<title>Pay</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Оплата — Private Clinic</title>
 
 <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
-<script src="api.js"></script> <!-- если там есть redeem / burn -->
-<script src="app.js"></script> <!-- инициализация провайдера, signer, баланс CRT -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="api.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
 
 <style>
-body{font-family:Arial;padding:40px}
-.box{max-width:400px;border:1px solid #ccc;padding:20px;border-radius:10px}
-.hidden{display:none}
-input,button{width:100%;padding:10px;margin-top:10px}
+:root {
+  --bg: #f5fcff;
+  --card-bg: #ffffff;
+  --text: #1a3c34;
+  --muted: #5f7a75;
+  --accent: #26c6da;
+  --accent-dark: #0097a7;
+  --border: #b2ebf2;
+  --shadow: 0 6px 20px rgba(38, 198, 218, 0.12);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: 'Roboto', sans-serif; background: var(--bg); color: var(--text); line-height:1.6; min-height:100vh; display:flex; flex-direction:column;}
+header { position: sticky; top:0; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-bottom:1px solid var(--border); z-index:100; box-shadow:0 2px 10px rgba(0,0,0,0.05);}
+.container { max-width:1240px; margin:0 auto; padding:0 20px;}
+nav { display:flex; justify-content:space-between; align-items:center; padding:18px 0;}
+.nav-actions { display:flex; gap:12px; align-items:center; }
+.nav-actions .btn { padding:8px 14px; border-radius:12px; font-size:0.95rem; }
+.logo { font-size:1.6rem; font-weight:700; color:var(--accent-dark); }
+.logo span { color:var(--accent); }
+.crt-badge { display:flex; align-items:center; gap:10px; padding:8px 14px; background:#e0f7fa; border-radius:50px; border:1px solid var(--border); cursor:pointer; transition:all 0.25s ease;}
+.crt-badge:hover { background:var(--accent); color:white; transform:translateY(-2px); box-shadow:var(--shadow);}
+.crt-icon { width:26px; height:26px; background:var(--accent); color:white; border-radius:50%; display:grid; place-items:center; font-weight:bold; font-size:13px;}
+.main { flex:1; display:flex; justify-content:center; align-items:flex-start; padding:60px 20px; }
+.box { max-width:400px; width:100%; border:1px solid var(--border); background:white; border-radius:16px; padding:28px; box-shadow:0 4px 15px rgba(0,0,0,0.05); margin-top:40px;}
+.hidden { display:none; }
+input, button { width:100%; padding:12px; margin-top:10px; border-radius:8px; border:1px solid #ccc; font-size:1rem; }
+button { cursor:pointer; border:none; background:var(--accent); color:white; font-weight:500; transition: all 0.3s ease; }
+button:hover { background:var(--accent-dark); transform: translateY(-2px); box-shadow: var(--shadow); }
+footer { background: var(--accent); color: white; text-align:center; padding:2rem 0; margin-top:auto; }
 </style>
 </head>
 <body>
 
-<h2>Оплата</h2>
+<header>
+  <div class="container">
+    <nav>
+      <a href="index.html" style="text-decoration:none;"><div class="logo">Private<span>Clinic</span></div></a>
+      <div class="nav-actions">
+        <a href="service-HTML/services.html" class="btn nav-btn">Услуги</a>
+        <div id="crtBadge" class="crt-badge">
+          <div class="crt-icon">C</div>
+          <span id="crtAmount">0.00 CRT</span>
+        </div>
+      </div>
+    </nav>
+  </div>
+</header>
 
-<p>Service id: <b id="sid"></b></p>
-<p>Amount: <b id="amount"></b></p>
+<main class="main">
+  <div id="cardBox" class="box hidden">
+    <h3>Оплата картой</h3>
+    <input placeholder="Номер карты">
+    <input placeholder="MM/YY">
+    <input placeholder="CVC">
+    <button id="cardPayBtn">Оплатить картой</button>
+  </div>
 
-<div id="cardBox" class="box hidden">
-  <h3>Card payment</h3>
-  <input placeholder="Card number">
-  <input placeholder="MM/YY">
-  <input placeholder="CVC">
-  <button id="cardPayBtn">Pay (card)</button>
-</div>
+  <div id="tokenBox" class="box hidden">
+    <h3>Оплата CRT-токенами</h3>
+    <p>Service: <b id="serviceName"></b></p>
+    <p>Amount to burn: <b id="burnAmountDisplay"></b> CRT</p>
+    <button id="tokenPayBtn">Оплатить токеном</button>
+    <p id="status" style="margin-top:10px;"></p>
+    <p id="error" style="margin-top:10px;color:red;"></p>
+  </div>
+</main>
 
-<div id="tokenBox" class="box hidden">
-  <h3>Token payment</h3>
-
-  <label>CRT to burn</label>
-  <input id="burnInput" readonly>
-
-  <button id="tokenPayBtn">Pay with CRT</button>
-
-  <p id="status"></p>
-  <p id="error" style="color:red"></p>
-</div>
+<footer>
+  © 2026 Private Clinic. Все права защищены.
+</footer>
 
 <script>
-function q(n){
-  return new URL(location.href).searchParams.get(n);
-}
-
+// ------------------- URL params
+function q(n){ return new URL(location.href).searchParams.get(n); }
 const method = q("method");
-const id     = q("id");
-const usd    = q("usd");
-const crt    = q("crt");
+const serviceId = q("id");
+const crt = q("crt");
+const serviceName = q("name") || serviceId;
 
-document.getElementById("sid").innerText = id;
+// ------------------- Contracts
+const contractAddress = "0xB8e2bacA218aB1513DA789413B556D5B9df7Af87";
 
-const amountEl = document.getElementById("amount");
-const cardBox  = document.getElementById("cardBox");
-const tokenBox = document.getElementById("tokenBox");
+// full fundABI
+const fundABI = [
+{"inputs":[],"name":"contribute","outputs":[],"stateMutability":"payable","type":"function"},
+{"inputs":[{"internalType":"address","name":"_rewardTokenAddress","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},
+{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"contributor","type":"address"},{"indexed":false,"internalType":"uint256","name":"amountETH","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"tokensMinted","type":"uint256"}],"name":"Contributed","type":"event"},
+{"inputs":[{"internalType":"uint256","name":"tokenAmount","type":"uint256"},{"internalType":"string","name":"serviceNote","type":"string"}],"name":"redeemForService","outputs":[],"stateMutability":"nonpayable","type":"function"},
+{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"TokensBurned","type":"event"},
+{"inputs":[],"name":"CAMPAIGN_TITLE","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},
+{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"contributions","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+{"inputs":[],"name":"CRT_PRICE_USD","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+{"inputs":[],"name":"FUNDING_GOAL","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+{"inputs":[],"name":"getETHPrice","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+{"inputs":[],"name":"getMyContribution","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+{"inputs":[],"name":"getTotalRaised","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+{"inputs":[],"name":"rewardToken","outputs":[{"internalType":"contract ClinicRewardToken","name":"","type":"address"}],"stateMutability":"view","type":"function"},
+{"inputs":[],"name":"totalRaised","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}
+];
 
-if(method === "card"){
-  cardBox.classList.remove("hidden");
-  amountEl.innerText = usd + " USD";
-}
+const tokenABI = [
+  "function balanceOf(address) view returns(uint256)",
+  "function decimals() view returns(uint8)",
+  "function approve(address,uint256) returns(bool)",
+  "function allowance(address,address) view returns(uint256)"
+];
+let provider, signer, fundContract, tokenContract;
 
-if(method === "token"){
-  tokenBox.classList.remove("hidden");
-  amountEl.innerText = crt + " CRT";
-  document.getElementById("burnInput").value = crt;
-}
+// ------------------- CRT badge
+const badge = document.getElementById("crtBadge");
+const crtAmountEl = document.getElementById("crtAmount");
+if(badge) badge.addEventListener("click",()=> window.location.href="index.html");
 
-document.getElementById("cardPayBtn")?.addEventListener("click", () => {
-  alert("Card payment mock: " + usd + " USD");
-});
-
-// 🔥 Логика burn CRT при оплате
-document.getElementById("tokenPayBtn")?.addEventListener("click", async () => {
-  const amount = crt; // CRT, который надо сжечь
-  const serviceId = id;
-
-  document.getElementById("status").innerText = "Processing...";
-  document.getElementById("error").innerText = "";
-
+async function updateCRTBadge(){
+  if(!crtAmountEl) return;
+  if(!signer||!tokenContract){ crtAmountEl.textContent="— CRT"; return;}
   try{
-    // здесь вызывается функция burn/redeem из testburn
-    // если у тебя в app.js есть функция redeem(amount, serviceId), она готова
-    await redeem(amount, serviceId);
+    const addr = await signer.getAddress();
+    const raw = await tokenContract.balanceOf(addr);
+    const decimals = await tokenContract.decimals();
+    crtAmountEl.textContent = Number(ethers.utils.formatUnits(raw,decimals)).toFixed(4)+" CRT";
+  }catch(e){ crtAmountEl.textContent="— CRT"; }
+}
 
-    document.getElementById("status").innerText = "Paid with CRT!";
-    alert("Оплата CRT успешно завершена!");
-  }catch(e){
-    console.error(e);
-    document.getElementById("error").innerText = e.reason || e.message || e;
-    document.getElementById("status").innerText = "Failed";
+// ------------------- Connect and init
+async function ensureConnected(){
+  if(!window.ethereum) throw new Error("No wallet");
+  if(!provider){ provider = new ethers.providers.Web3Provider(window.ethereum); signer=provider.getSigner(); }
+  if(!fundContract){
+    fundContract = new ethers.Contract(contractAddress,fundABI,signer);
+    const tokenAddress = await fundContract.rewardToken();
+    tokenContract = new ethers.Contract(tokenAddress,tokenABI,signer);
+  }
+}
+
+// ------------------- Pay token
+async function payForService(tokenAmountHuman){
+  try {
+    await ensureConnected();
+    const decimals = await tokenContract.decimals();
+    const amount = ethers.utils.parseUnits(tokenAmountHuman,decimals);
+    const tx1 = await tokenContract.approve(contractAddress,amount);
+    await tx1.wait();
+    const tx2 = await fundContract.redeemForService(amount, serviceName);
+    const receipt = await tx2.wait();
+    document.getElementById("status").innerText="Оплата успешно проведена!";
+    await updateCRTBadge();
+  } catch(err){
+    console.error(err);
+    document.getElementById("error").innerText = "Ошибка: "+(err.reason||err.message||err);
+  }
+}
+
+// ------------------- Load page
+window.addEventListener("load",async()=>{
+  if(!window.ethereum) return;
+  provider=new ethers.providers.Web3Provider(window.ethereum);
+  signer=provider.getSigner();
+  fundContract=new ethers.Contract(contractAddress,fundABI,signer);
+  const tokenAddress = await fundContract.rewardToken();
+  tokenContract=new ethers.Contract(tokenAddress,tokenABI,signer);
+  await updateCRTBadge();
+
+  const cardBox=document.getElementById("cardBox");
+  const tokenBox=document.getElementById("tokenBox");
+  if(method==="card"){ cardBox.classList.remove("hidden"); }
+  if(method==="token"){ 
+    tokenBox.classList.remove("hidden");
+    document.getElementById("serviceName").textContent = serviceName;
+    document.getElementById("burnAmountDisplay").textContent = crt || "0";
   }
 });
+//lol
+// ------------------- Handlers
+document.getElementById("cardPayBtn")?.addEventListener("click",()=>{ alert(`Card payment: ${serviceName} (${crt || "0"} CRT equivalent)`); });
+document.getElementById("tokenPayBtn")?.addEventListener("click",async()=>{ await payForService(crt); });
 
-// инициализация и обновление баланса CRT (если есть функция initializeAndUpdateBadge)
-window.addEventListener("load", async () => {
-  if(typeof initializeAndUpdateBadge === "function"){
-    await initializeAndUpdateBadge();
-  }
-});
+if(window.ethereum){
+  window.ethereum.on("accountsChanged",async()=>{ await updateCRTBadge(); });
+  window.ethereum.on("chainChanged",()=>{ location.reload(); });
+}
 </script>
 
 </body>
