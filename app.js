@@ -236,7 +236,9 @@ window.addEventListener("load", () => {
   const badge = document.getElementById("crtBadge");
   if (badge) {
     badge.onclick = () => {
-      window.location.href = "index.html";
+      // Dynamically determine path based on current location
+      const path = location.pathname.includes('/service-HTML/') ? '../index.html' : 'index.html';
+      window.location.href = path;
     };
   }
 
