@@ -449,11 +449,23 @@ const allowance = await tokenContract.allowance(
 );
 
 console.log("allowance:", allowance.toString());
-  const tx2 = await fundContract.redeemForService(amount, note);
-  await tx2.wait();
+	const tx2 = await fundContract.redeemForService(amount, note);
+	const receipt = await tx2.wait();
 
-  await updateBalances();
-  await updateCRTBadge();
+	// Save order/payment to database (best-effort)
+	try {
+		const walletAddr = await signer.getAddress();
+		await dbFunctions.createOrder(walletAddr, note, receipt.transactionHash, 'completed', {
+			amount_tokens: tokenAmountHuman,
+			service_name: note
+		});
+		console.log('Order saved to DB');
+	} catch (dbErr) {
+		console.error('Failed to save order to DB:', dbErr);
+	}
+
+	await updateBalances();
+	await updateCRTBadge();
 }
 
 //testburn pay button handler

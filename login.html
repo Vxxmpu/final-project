@@ -100,6 +100,18 @@
 
       localStorage.setItem("walletAddress", address);
 
+      // Save user in database (create or update last_login)
+      try {
+        const existing = await dbFunctions.getUser(address);
+        if (!existing) {
+          await dbFunctions.createUser(address);
+        } else {
+          await dbFunctions.updateUser(address, { last_login: new Date().toISOString() });
+        }
+      } catch (dbErr) {
+        console.error('DB error on login:', dbErr);
+      }
+
       // после логина — на главную
       window.location.href = "index.html";
     };

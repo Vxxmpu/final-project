@@ -46,10 +46,18 @@ async function redeem(priceCRT, serviceName) {
     document.getElementById("error").innerText = "";
 
     const tx = await fund.redeemForService(price, serviceName);
-    await tx.wait();
+    const receipt = await tx.wait();
 
     document.getElementById("status").innerText =
       `Услуга "${serviceName}" успешно оплачена`;
+
+    // Save order to database (best-effort)
+    try {
+      await dbFunctions.createOrder(addr, serviceName, receipt.transactionHash, 'completed', { amount_tokens: priceCRT });
+      console.log('Order saved to DB');
+    } catch (dbErr) {
+      console.error('Failed to save order to DB:', dbErr);
+    }
 
   } catch (err) {
     console.error(err);

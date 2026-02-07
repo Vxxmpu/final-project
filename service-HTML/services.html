@@ -339,6 +339,35 @@ async function loadCRTForSavedUser() {
 loadCRTForSavedUser();
 </script>
 
+<script>
+  // Try to load services from database and replace static list if present
+  (async function() {
+    try {
+      const services = await dbFunctions.getServices();
+      if (!services || services.length === 0) return; // keep static fallback
+
+      const main = document.querySelector('main');
+      main.innerHTML = services.map(s => `
+        <div class="service-card">
+          <img src="${s.image_url || '../images/анализКала.jpg'}" alt="${s.name || s.title}" data-service-id="${s.id}">
+          <p>${s.name || s.title}</p>
+        </div>
+      `).join('');
+
+      // Wire up clicks to open details page (use DB id)
+      document.querySelectorAll('.service-card img').forEach(img => {
+        img.style.cursor = 'pointer';
+        img.addEventListener('click', () => {
+          const id = img.dataset.serviceId;
+          window.location.href = 'services-detail.html?id=' + encodeURIComponent(id);
+        });
+      });
+    } catch (err) {
+      console.error('Failed to load services from DB:', err);
+    }
+  })();
+</script>
+
 
 </body>
 </html>
