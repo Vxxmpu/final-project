@@ -42,20 +42,35 @@ async function redeem(priceCRT, serviceName) {
       return;
     }
 
-    document.getElementById("status").innerText = "Отправка транзакции...";
-    document.getElementById("error").innerText = "";
+    const statusEl = document.getElementById("status");
+    const errorEl = document.getElementById("error");
+    if (statusEl) statusEl.innerText = "Отправка транзакции...";
+    if (errorEl) errorEl.innerText = "";
 
     const tx = await fund.redeemForService(price, serviceName);
-    await tx.wait();
+    const receipt = await tx.wait();
 
-    document.getElementById("status").innerText =
+    const successStatusEl = document.getElementById("status");
+    if (successStatusEl) successStatusEl.innerText =
       `Услуга "${serviceName}" успешно оплачена`;
+
+    // Save order to database (best-effort)
+    try {
+      await dbFunctions.createOrder(addr, serviceName, receipt.transactionHash, 'completed', { amount_tokens: priceCRT });
+      console.log('Order saved to DB');
+    } catch (dbErr) {
+      console.error('Failed to save order to DB:', dbErr);
+    }
 
   } catch (err) {
     console.error(err);
-    document.getElementById("error").innerText =
-      err.reason || err.message;
-    document.getElementById("status").innerText = "";
+    const errorEl = document.getElementById("error");
+    const statusEl = document.getElementById("status");
+    if (errorEl) errorEl.innerText = err.reason || err.message;
+    if (statusEl) statusEl.innerText = "";
   }
   
 }
+
+// Export redeem function globally for access from other scripts
+window.redeem = redeem;
