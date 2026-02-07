@@ -67,3 +67,6 @@ async function redeem(priceCRT, serviceName) {
   }
   
 }
+
+// Export redeem function globally for access from other scripts
+window.redeem = redeem;
