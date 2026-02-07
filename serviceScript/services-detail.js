@@ -88,7 +88,7 @@
       )) return;
 
       try {
-        await redeem(finalAmount, s.title);
+        await window.redeem(finalAmount, s.title);
         alert('Услуга успешно оплачена токенами!');
       } catch (err) {
         console.error(err);
