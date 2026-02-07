@@ -429,13 +429,13 @@
     
     // Initialize on page load
     window.addEventListener("load", async () => {
-      await updateCRTBadge();
+      await initializeAndUpdateBadge();
     });
     
     // Listen for account changes
     if (window.ethereum) {
       window.ethereum.on("accountsChanged", async () => {
-        await updateCRTBadge();
+        await initializeAndUpdateBadge();
       });
       
       window.ethereum.on("chainChanged", () => {

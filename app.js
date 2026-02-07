@@ -276,6 +276,34 @@ async function tryAutoConnect() {
 
 }
 
+// Function to initialize contracts and update badge (used by other pages)
+async function initializeAndUpdateBadge() {
+  if (!window.ethereum) return;
+  
+  try {
+    const accounts = await window.ethereum.request({
+      method: "eth_accounts"
+    });
+    
+    if (!accounts || accounts.length === 0) {
+      return;
+    }
+    
+    // Only initialize if not already done
+    if (!provider) {
+      provider = new ethers.providers.Web3Provider(window.ethereum);
+      signer = provider.getSigner();
+      fundContract = new ethers.Contract(contractAddress, fundABI, signer);
+      const tokenAddress = await fundContract.rewardToken();
+      tokenContract = new ethers.Contract(tokenAddress, tokenABI, signer);
+    }
+    
+    await updateCRTBadge();
+  } catch (err) {
+    console.error('Error initializing contracts:', err);
+  }
+}
+
 async function connect() {
   if (!window.ethereum) {
     alert("Install MetaMask");
