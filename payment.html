@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Оплата услуги — Private Clinic</title>
+  <title>Service Payment — Private Clinic</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -34,7 +34,7 @@
       <nav>
         <a href="index.html" style="text-decoration:none;"><div class="logo">Private<span>Clinic</span></div></a>
         <div class="nav-actions">
-          <a href="service-HTML/services.html" class="btn nav-btn">Услуги</a>
+          <a href="service-HTML/services.html" class="btn nav-btn">Services</a>
         </div>
       </nav>
     </div>
@@ -42,35 +42,35 @@
 
   <main class="container">
     <div class="card">
-      <h2>Оплатить услугу</h2>
-      <p>Введите сумму и примечание (название услуги) — и подтвердите оплату через MetaMask.</p>
+      <h2>Pay for a Service</h2>
+      <p>Enter the amount and a note (service name), then confirm payment via MetaMask.</p>
 
-      <label for="payAmount">Сумма (CRT)</label>
-      <input id="payAmount" type="number" step="0.0001" placeholder="Например: 10">
+      <label for="payAmount">Amount (CRT)</label>
+      <input id="payAmount" type="number" step="0.0001" placeholder="Example: 10">
 
-      <label for="payNote">Примечание / название услуги</label>
-      <input id="payNote" type="text" placeholder="Например: Консультация">
+      <label for="payNote">Note / service name</label>
+      <input id="payNote" type="text" placeholder="Example: Consultation">
 
-      <button id="payNow">Оплатить</button>
+      <button id="payNow">Pay</button>
 
       <p id="status" style="margin-top:12px;color:var(--accent);"></p>
       <p id="error" style="margin-top:8px;color:#e53935;"></p>
     </div>
   </main>
 
-  <footer>© 2026 Private Clinic. Все права защищены.</footer>
+  <footer>© 2026 Private Clinic. All rights reserved.</footer>
 
   <script src="app.js"></script>
   <script>
     document.getElementById('payNow').addEventListener('click', async () => {
       const amount = document.getElementById('payAmount').value.trim();
-      const note = document.getElementById('payNote').value.trim() || 'Оплата услуги';
-      if (!amount || isNaN(amount)) { alert('Введите корректную сумму CRT'); return; }
-      document.getElementById('status').innerText = 'Отправка транзакции...';
+      const note = document.getElementById('payNote').value.trim() || 'Service payment';
+      if (!amount || isNaN(amount)) { alert('Enter a valid CRT amount'); return; }
+      document.getElementById('status').innerText = 'Sending transaction...';
       document.getElementById('error').innerText = '';
       try {
         await payForService(amount, note);
-        document.getElementById('status').innerText = 'Оплата успешно выполнена';
+        document.getElementById('status').innerText = 'Payment completed successfully';
       } catch (err) {
         console.error(err);
         document.getElementById('error').innerText = err.reason || err.message || String(err);

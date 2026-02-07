@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Детали услуги</title>
+  <title>Service Details</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -274,7 +274,7 @@
       <nav>
         <a href="../index.html" style="text-decoration:none;"><div class="logo">Private<span>Clinic</span></div></a>
         <div class="nav-actions">
-          <a href="services.html" class="btn nav-btn">Услуги</a>
+          <a href="services.html" class="btn nav-btn">Services</a>
           <div id="crtBadge" class="crt-badge">
             <div class="crt-icon">C</div>
             <span id="crtAmount">0.00 CRT</span>
@@ -287,27 +287,27 @@
   <main>
     <div class="service-container">
       <div class="service-image">
-        <img id="detailImg" src="" alt="Услуга" />
+        <img id="detailImg" src="" alt="Service" />
       </div>
       
       <div class="service-info">
-        <h1 id="title">Услуга</h1>
-        <p id="longDesc">Подробное описание услуги появится здесь.</p>
+        <h1 id="title">Service</h1>
+        <p id="longDesc">A detailed service description will appear here.</p>
         
         <div class="payment-section">
-          <h3>💳 Выберите способ оплаты</h3>
+          <h3>💳 Choose a payment method</h3>
           <div class="payment-buttons">
-            <button class="pay-btn pay-onsite">📍 Оплатить на месте</button>
-            <button class="pay-btn pay-card">💳 Оплатить картой</button>
-            <button class="pay-btn pay-token">🔐 Оплатить токеном</button>
+            <button class="pay-btn pay-onsite">📍 Pay on site</button>
+            <button class="pay-btn pay-card">💳 Pay by card</button>
+            <button class="pay-btn pay-token">🔐 Pay with token</button>
           </div>
           
           <div class="price-table">
             <table>
               <thead>
                 <tr>
-                  <th>Услуга</th>
-                  <th>Базовая цена</th>
+                  <th>Service</th>
+                  <th>Base price</th>
                 </tr>
               </thead>
               <tbody id="priceTableBody">
@@ -320,7 +320,7 @@
   </main>
 
   <footer>
-    © 2026 Частная клиника. Все права защищены.
+    © 2026 Private Clinic. All rights reserved.
   </footer>
 
 <script>
@@ -467,7 +467,7 @@ if(payOnsite && s){
 if(payCard && s){
   payCard.onclick = () => {
 
-    // передаём цену В ДОЛЛАРАХ
+    // pass price in USD
     location.href =
       `../pay.html?method=card&id=${id}&usd=${s.usd}`;
   };
@@ -476,7 +476,7 @@ if(payCard && s){
 if(payToken && s){
   payToken.onclick = () => {
 
-    // передаём цену В CRT
+    // pass price in CRT
     location.href =
       `../pay.html?method=token&id=${id}&crt=${s.crt}`;
   };
@@ -501,7 +501,7 @@ if(window.ethereum){
   });
 }
 /* ----------------------------
-   CRT Badge — полный рабочий вариант
+  CRT Badge — full working version
 -----------------------------*/
 const crtBadgeEl = document.getElementById("crtBadge");
 const crtAmountEl = document.getElementById("crtAmount");
@@ -540,13 +540,13 @@ async function updateBadge() {
   }
 }
 
-// инициализация при загрузке страницы
+// initialize on page load
 window.addEventListener("load", async () => {
   await ensureBadgeConnected();
   await updateBadge();
 });
 
-// обновление при смене аккаунта или сети
+// update on account or network change
 if (window.ethereum) {
   window.ethereum.on("accountsChanged", async () => {
     await ensureBadgeConnected();
@@ -557,7 +557,7 @@ if (window.ethereum) {
   });
 }
 
-// клик на бейдж
+// badge click
 if (crtBadgeEl) {
   crtBadgeEl.onclick = () => {
     window.location.href = "../buyToken.html";
