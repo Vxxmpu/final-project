@@ -4,8 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Наши услуги</title>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="../db.js"></script>
+  <script src="../api.js"></script>
+  <script src="../app.js"></script>
   <style>
     :root{ --bg: #f5fcff; --card-bg: #ffffff; --text: #1a3c34; --muted: #5f7a75; --accent:#26c6da; --accent-dark:#0097a7; --border:#b2ebf2; --shadow: 0 6px 20px rgba(38, 198, 218, 0.12); }
     body {
@@ -255,89 +257,7 @@ header a { text-decoration:none; }
     </div>
   </div>
 
-  <script>
-    const services = {
-      urine: {title: 'Анализ мочи', short: 'Быстрый тест для выявления инфекций и нарушений мочеполовой системы. Результаты готовы в течение одного дня.', img: '../images/анализКала.jpg'},
-      stool: {title: 'Анализ кала', short: 'Диагностика паразитов и пищеварительных нарушений. Помогает выявить проблемы с пищеварением и инфекции.', img: '../images/анализКала.jpg'},
-      blood: {title: 'Анализ крови', short: 'Общий и биохимический анализ для оценки состояния организма. Выявляет анемию, инфекции и нарушения обмена веществ.', img: '../images/анализКрови.jpg'},
-      xray: {title: 'Рентген', short: 'Изображения костей и органов для диагностики травм и заболеваний. Быстрое и безопасное обследование груди, рук и ног.', img: '../images/Ренгтен.png'},
-      ecg: {title: 'ЭКГ', short: 'Оценка работы сердца и ритма. Выявляет аритмии, ишемию и другие сердечные нарушения в течение 10 минут.', img: '../images/ЭКГ.png'},
-      ultrasound: {title: 'УЗИ', short: 'Безопасное исследование внутренних органов без излучения. Применяется для диагностики органов брюшной полости и сосудов.', img: '../images/УЗИ.jpg'},
-      mri: {title: 'МРТ', short: 'Подробная картина тканей и органов высокого разрешения. Идеально для диагностики опухолей и заболеваний головного мозга.', img: '../images/МРТ.jpg'},
-      vaccination: {title: 'Вакцинация', short: 'Профилактика инфекций с использованием современных вакцин. Защита от гриппа, пневмонии и других опасных заболеваний.', img: '../images/Вакцинация.jpeg'},
-      physiotherapy: {title: 'Физиотерапия', short: 'Процедуры для восстановления после травм и операций. Включает массаж, электротерапию и другие эффективные методы.', img: '../images/Физиотерапия.jpg'},
-      dentistry: {title: 'Стоматология', short: 'Профилактика и лечение зубов и десен. Чистка, пломбирование и консультация по гигиене полости рта.', img: '../images/Стоматология.jpeg'},
-      ophthalmology: {title: 'Офтальмология', short: 'Осмотр зрения и лечение глазных заболеваний. Проверка остроты зрения, диагностика катаракты и глаукомы.', img: '../images/Офтальмология.webp'},
-      endocrinology: {title: 'Эндокринология', short: 'Диагностика и лечение гормональных нарушений. Управление диабетом, проблемами щитовидной железы и метаболизма.', img: '../images/Эндокринология.jpg'}
-    };
-
-    const modal = document.getElementById('modal');
-    const modalImg = document.getElementById('modalImg');
-    const modalTitle = document.getElementById('modalTitle');
-    const modalDesc = document.getElementById('modalDesc');
-    const moreBtn = document.getElementById('moreBtn');
-    document.querySelectorAll('.service-card img').forEach(img => {
-      img.style.cursor = 'pointer';
-      img.addEventListener('click', () => {
-        const key = img.dataset.service;
-        const s = services[key];
-        if (!s) return;
-        modalImg.src = s.img;
-        modalImg.alt = s.title;
-        modalTitle.textContent = s.title;
-        modalDesc.textContent = s.short;
-        moreBtn.href = 'services-detail?id=' + encodeURIComponent(key);
-        modal.style.display = 'flex';
-      });
-    });
-
-    modal.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
-  </script>
-
-
-<script>
-const badge = document.getElementById("crtBadge");
-const crtAmountEl = document.getElementById("crtAmount");
-
-badge.addEventListener("click", () => {
-  window.location.href = "../buyToken.html"; // путь корректируем относительно services.html
-});
-
-async function loadCRTForSavedUser() {
-  const user = localStorage.getItem("walletAddress");
-  if (!user) return;
-
-  if (!window.ethereum) return;
-
-  const provider = new ethers.providers.Web3Provider(window.ethereum);
-
-  const fund = new ethers.Contract(
-    "0xF68AC1448ba859208b0622A87CF3f3A4d591Cfa3",
-    ["function rewardToken() view returns(address)"],
-    provider
-  );
-
-  const tokenAddress = await fund.rewardToken();
-
-  const token = new ethers.Contract(
-    tokenAddress,
-    [
-      "function balanceOf(address) view returns(uint256)",
-      "function decimals() view returns(uint8)"
-    ],
-    provider
-  );
-
-  const bal = await token.balanceOf(user);
-  const dec = await token.decimals();
-
-  const formatted = ethers.utils.formatUnits(bal, dec);
-
-  crtAmountEl.textContent = Number(formatted).toFixed(4) + " CRT";
-}
-
-loadCRTForSavedUser();
-</script>
+  <script src="../serviceScript/services-page.js"></script>
 
 
 </body>

@@ -236,7 +236,9 @@ window.addEventListener("load", () => {
   const badge = document.getElementById("crtBadge");
   if (badge) {
     badge.onclick = () => {
-      window.location.href = "index.html";
+      // Dynamically determine path based on current location
+      const path = location.pathname.includes('/service-HTML/') ? '../index.html' : 'index.html';
+      window.location.href = path;
     };
   }
 
@@ -274,6 +276,34 @@ async function tryAutoConnect() {
   await updateBalances();
   await updateCRTBadge();
 
+}
+
+// Function to initialize contracts and update badge (used by other pages)
+async function initializeAndUpdateBadge() {
+  if (!window.ethereum) return;
+  
+  try {
+    const accounts = await window.ethereum.request({
+      method: "eth_accounts"
+    });
+    
+    if (!accounts || accounts.length === 0) {
+      return;
+    }
+    
+    // Only initialize if not already done
+    if (!provider) {
+      provider = new ethers.providers.Web3Provider(window.ethereum);
+      signer = provider.getSigner();
+      fundContract = new ethers.Contract(contractAddress, fundABI, signer);
+      const tokenAddress = await fundContract.rewardToken();
+      tokenContract = new ethers.Contract(tokenAddress, tokenABI, signer);
+    }
+    
+    await updateCRTBadge();
+  } catch (err) {
+    console.error('Error initializing contracts:', err);
+  }
 }
 
 async function connect() {
@@ -449,11 +479,23 @@ const allowance = await tokenContract.allowance(
 );
 
 console.log("allowance:", allowance.toString());
-  const tx2 = await fundContract.redeemForService(amount, note);
-  await tx2.wait();
+	const tx2 = await fundContract.redeemForService(amount, note);
+	const receipt = await tx2.wait();
 
-  await updateBalances();
-  await updateCRTBadge();
+	// Save order/payment to database (best-effort)
+	try {
+		const walletAddr = await signer.getAddress();
+		await dbFunctions.createOrder(walletAddr, note, receipt.transactionHash, 'completed', {
+			amount_tokens: tokenAmountHuman,
+			service_name: note
+		});
+		console.log('Order saved to DB');
+	} catch (dbErr) {
+		console.error('Failed to save order to DB:', dbErr);
+	}
+
+	await updateBalances();
+	await updateCRTBadge();
 }
 
 //testburn pay button handler
