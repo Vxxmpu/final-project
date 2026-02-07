@@ -343,91 +343,87 @@
       return url.searchParams.get(name);
     }
 
-    const id = getParam('id');
+    // Initialize elements
     const titleEl = document.getElementById('title');
     const descEl = document.getElementById('longDesc');
     const imgEl = document.getElementById('detailImg');
-    if (!id || !services[id]) {
-  titleEl.textContent = 'Услуга не найдена';
-  descEl.textContent = 'Выберите услугу на странице услуг.';
-  imgEl.src = '';
-  priceTableBody.innerHTML = ''; // пустая таблица
-} else {
-  const s = services[id];
-  titleEl.textContent = s.title;
-  descEl.textContent = s.long;
-  imgEl.src = s.img;
-  imgEl.alt = s.title;
+    const priceTableBody = document.getElementById('priceTableBody');
+    const badge = document.getElementById("crtBadge");
+    const payOnsite = document.querySelector('.pay-onsite');
+    const payCard = document.querySelector('.pay-card');
+    const payToken = document.querySelector('.pay-token');
 
-  // Заполняем таблицу только этой услугой
-  priceTableBody.innerHTML = `
-    <tr>
-      <td>${s.title}</td>
-      <td>${s.price.toLocaleString('ru-RU')} KZT</td>
-    </tr>
-  `;
-}
+    const id = getParam('id');
+    let s = null;
 
+    if (id && services[id]) {
+      s = services[id];
+    }
 
-    if (!id || !services[id]) {
+    if (!id || !s) {
       titleEl.textContent = 'Услуга не найдена';
       descEl.textContent = 'Выберите услугу на странице услуг.';
       imgEl.src = '';
+      priceTableBody.innerHTML = '';
     } else {
-      const s = services[id];
       titleEl.textContent = s.title;
       descEl.textContent = s.long;
       imgEl.src = s.img;
       imgEl.alt = s.title;
+
+      priceTableBody.innerHTML = `
+        <tr>
+          <td>${s.title}</td>
+          <td>${s.price.toLocaleString('ru-RU')} KZT</td>
+        </tr>
+      `;
     }
-  
 
-  
-    const badge = document.getElementById("crtBadge");
-    if (badge) badge.addEventListener("click", () => { window.location.href = "../buyToken.html"; });
-    const id1 = getParam('id');
-    const s = services[id1];
-
-  // ===== Кнопки оплаты =====
-  const payOnsite = document.querySelector('.pay-onsite');
-  const payCard = document.querySelector('.pay-card');
-  const payToken = document.querySelector('.pay-token');
-
-  // Оплата на месте
-  payOnsite.addEventListener('click', () => {
-    alert(`Вы выбрали оплату на месте. Сумма: ${s.price.toLocaleString('ru-RU')} KZT`);
-  });
-
-  // Оплата картой
-  payCard.addEventListener('click', () => {
-    alert(`Вы выбрали оплату картой. Сумма: ${s.price.toLocaleString('ru-RU')} KZT`);
-    // Здесь можно вызвать интеграцию с платежной системой
-  });
-
-  // Оплата токеном с 15% скидкой и 10% charity
-  payToken.addEventListener('click', async () => {
-    const discount = 0.15; // скидка 15%
-    const charityPercent = 0.10; // charity 10%
-    const priceCRT = s.price * (1 - discount);
-    const charityAmount = priceCRT * charityPercent;
-    const finalAmount = priceCRT - charityAmount;
-
-    if (!confirm(
-      `Вы оплачиваете токенами.\n` +
-      `Цена со скидкой: ${priceCRT.toLocaleString('ru-RU')} KZT\n` +
-      `Charity (10%): ${charityAmount.toLocaleString('ru-RU')} KZT\n` +
-      `Итоговая сумма к списанию: ${finalAmount.toLocaleString('ru-RU')} KZT\n` +
-      `Продолжить?`
-    )) return;
-
-    try {
-      await redeem(finalAmount, s.title); 
-      alert('Услуга успешно оплачена токенами!');
-    } catch (err) {
-      console.error(err);
-      alert('Ошибка при оплате токенами: ' + (err.reason || err.message));
+    // CRT Badge click handler
+    if (badge) {
+      badge.addEventListener("click", () => { 
+        window.location.href = "../buyToken.html"; 
+      });
     }
-  });
+
+    // Payment buttons
+    if (payOnsite && s) {
+      payOnsite.addEventListener('click', () => {
+        alert(`Вы выбрали оплату на месте. Сумма: ${s.price.toLocaleString('ru-RU')} KZT`);
+      });
+    }
+
+    if (payCard && s) {
+      payCard.addEventListener('click', () => {
+        alert(`Вы выбрали оплату картой. Сумма: ${s.price.toLocaleString('ru-RU')} KZT`);
+      });
+    }
+
+    if (payToken && s) {
+      payToken.addEventListener('click', async () => {
+        const discount = 0.15;
+        const charityPercent = 0.10;
+        const priceCRT = s.price * (1 - discount);
+        const charityAmount = priceCRT * charityPercent;
+        const finalAmount = priceCRT - charityAmount;
+
+        if (!confirm(
+          `Вы оплачиваете токенами.\n` +
+          `Цена со скидкой: ${priceCRT.toLocaleString('ru-RU')} KZT\n` +
+          `Charity (10%): ${charityAmount.toLocaleString('ru-RU')} KZT\n` +
+          `Итоговая сумма к списанию: ${finalAmount.toLocaleString('ru-RU')} KZT\n` +
+          `Продолжить?`
+        )) return;
+
+        try {
+          await redeem(finalAmount, s.title);
+          alert('Услуга успешно оплачена токенами!');
+        } catch (err) {
+          console.error(err);
+          alert('Ошибка при оплате токенами: ' + (err.reason || err.message));
+        }
+      });
+    }
   </script>
 
 </body>
